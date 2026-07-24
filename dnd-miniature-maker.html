@@ -129,6 +129,13 @@
             margin-top: 13px;
         }
 
+        .slider-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 76px;
+            gap: 8px;
+            align-items: center;
+        }
+
         .field label,
         .range-line label {
             display: flex;
@@ -156,6 +163,11 @@
         input[type="range"] {
             width: 100%;
             accent-color: var(--accent);
+        }
+
+        .slider-value {
+            min-width: 0;
+            text-align: right;
         }
 
         .toggle {
@@ -203,6 +215,7 @@
             gap: 9px;
             max-height: 290px;
             overflow: auto;
+            overflow-x: hidden;
             padding-right: 2px;
         }
 
@@ -217,6 +230,8 @@
             grid-template-columns: 45px 1fr auto;
             align-items: start;
             gap: 9px;
+            width: 100%;
+            min-width: 0;
             padding: 7px;
             background: var(--panel-2);
             border: 1px solid #303c4e;
@@ -246,19 +261,20 @@
 
         .mini-details {
             min-width: 0;
+            width: 100%;
         }
 
         .mini-controls {
             display: grid;
-            gap: 6px;
-            margin-top: 7px;
+            gap: 3px;
+            margin-top: 5px;
         }
 
         .mini-control {
             display: grid;
-            grid-template-columns: 38px 1fr 38px;
+            grid-template-columns: 28px minmax(0, 1fr) 42px 14px;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             color: var(--muted);
             font-size: 10px;
         }
@@ -268,10 +284,23 @@
             margin: 0;
         }
 
-        .mini-control output {
-            color: var(--ink);
+        .mini-control input[type="range"] {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .mini-control .mini-value {
+            height: 24px;
+            padding: 2px 4px;
             font-size: 10px;
             text-align: right;
+        }
+
+        .mini-unit {
+            color: var(--muted);
+            font-size: 10px;
+            text-align: left;
+            margin-left: -2px;
         }
 
         .icon-btn {
@@ -621,10 +650,10 @@
                 <h2>New miniature defaults</h2>
                 <div class="field"><label for="height"><span>Figure
                             height</span><output id="heightOutput">40
-                            mm</output></label><input id="height" type="range" min="20" max="100" value="40"></div>
+                            mm</output></label><div class="slider-row"><input id="height" type="range" min="20" max="100" value="40"><input id="heightValue" class="slider-value" type="number" min="20" max="100" value="40"></div></div>
                 <div class="field"><label for="baseSize"><span>Base
                             diameter</span><output id="baseOutput">25
-                            mm</output></label><input id="baseSize" type="range" min="15" max="75" value="25"></div>
+                            mm</output></label><div class="slider-row"><input id="baseSize" type="range" min="15" max="75" value="25"><input id="baseValue" class="slider-value" type="number" min="15" max="75" value="25"></div></div>
                 <div class="field"><label for="copies"><span>Copies for new
                             minis</span></label><input id="copies" type="number" min="1" max="12" value="1"></div>
                 <p class="helper">These settings apply to newly uploaded art. Each mini can be adjusted below.</p>
@@ -637,8 +666,8 @@
                         <option value="letter">US Letter</option>
                     </select></div>
                 <div class="field"><label for="margin"><span>Page
-                            margin</span><output id="marginOutput">12
-                            mm</output></label><input id="margin" type="range" min="5" max="25" value="12"></div>
+                        margin</span><output id="marginOutput">12
+                        mm</output></label><div class="slider-row"><input id="margin" type="range" min="5" max="25" value="12"><input id="marginValue" class="slider-value" type="number" min="5" max="25" value="12"></div></div>
                 <label class="toggle"><span>Show cut / fold
                         guides</span><input id="guides" type="checkbox" checked></label>
                 <label class="toggle"><span>Outline artwork
@@ -683,11 +712,17 @@
     <script>
         (() => {
             const state = { minis: [], height: 40, base: 25, copies: 1, margin: 12, page: 'a4', guides: true, silhouette: true };
-            const elements = Object.fromEntries(['imageUpload', 'dropZone', 'height', 'heightOutput', 'baseSize', 'baseOutput', 'copies', 'pageSize', 'margin', 'marginOutput', 'guides', 'silhouette', 'miniList', 'miniCount', 'sheet', 'paper', 'sheetStatus', 'paperNote', 'printButton', 'clearButton'].map(id => [id, document.getElementById(id)]));
+            const elements = Object.fromEntries(['imageUpload', 'dropZone', 'height', 'heightValue', 'heightOutput', 'baseSize', 'baseValue', 'baseOutput', 'copies', 'pageSize', 'margin', 'marginValue', 'marginOutput', 'guides', 'silhouette', 'miniList', 'miniCount', 'sheet', 'paper', 'sheetStatus', 'paperNote', 'printButton', 'clearButton'].map(id => [id, document.getElementById(id)]));
             const mm = value => `${value}mm`;
             const escapeHtml = value => value.replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
             const clampBase = value => Math.max(15, Math.min(75, Math.round(value)));
             const getAutoBase = mini => clampBase(mini.height * mini.aspect * (mini.artScale / 100) + 6);
+            const clampValue = (value, min, max) => Math.max(min, Math.min(max, Math.round(value)));
+            const parseNumberValue = value => value === '' ? null : Number(value);
+            const syncNumberAndRange = (rangeElement, numberElement, value) => {
+                rangeElement.value = value;
+                numberElement.value = value;
+            };
             const loadImage = src => new Promise((resolve, reject) => {
                 const image = new Image();
                 image.onload = () => resolve(image);
@@ -743,8 +778,11 @@
                 elements.heightOutput.textContent = `${state.height} mm`;
                 elements.baseOutput.textContent = `${state.base} mm`;
                 elements.marginOutput.textContent = `${state.margin} mm`;
+                elements.heightValue.value = state.height;
+                elements.baseValue.value = state.base;
+                elements.marginValue.value = state.margin;
                 elements.miniCount.textContent = `(${state.minis.length})`;
-                elements.miniList.innerHTML = state.minis.length ? state.minis.map((mini, index) => `<div class="mini-row"><img src="${mini.src}" alt=""><div class="mini-details"><strong title="${escapeHtml(mini.name)}">${escapeHtml(mini.name)}</strong><small>${mini.copies} ${mini.copies === 1 ? 'copy' : 'copies'}</small><div class="mini-controls"><label class="mini-control"><span>Height</span><input data-mini-control="height" data-index="${index}" type="range" min="20" max="100" value="${mini.height}"><output>${mini.height} mm</output></label><label class="mini-control"><span>Art zoom</span><input data-mini-control="artScale" data-index="${index}" type="range" min="50" max="160" value="${mini.artScale}"><output>${mini.artScale}%</output></label><label class="mini-control"><span>Base</span><input data-mini-control="base" data-index="${index}" type="range" min="15" max="75" value="${mini.base}"><output>${mini.base} mm</output></label><label class="mini-control"><span>Copies</span><input data-mini-control="copies" data-index="${index}" type="range" min="1" max="12" value="${mini.copies}"><output>${mini.copies}</output></label></div></div><button class="icon-btn" data-remove="${index}" title="Remove ${escapeHtml(mini.name)}">×</button></div>`).join('') : '<p class="empty">Your uploaded adventurers will appear here.</p>';
+                elements.miniList.innerHTML = state.minis.length ? state.minis.map((mini, index) => `<div class="mini-row"><img src="${mini.src}" alt=""><div class="mini-details"><strong title="${escapeHtml(mini.name)}">${escapeHtml(mini.name)}</strong><small>${mini.copies} ${mini.copies === 1 ? 'copy' : 'copies'}</small><div class="mini-controls"><label class="mini-control"><span>Height</span><input data-mini-control="height" data-index="${index}" data-mini-kind="range" type="range" min="20" max="100" value="${mini.height}"><input class="mini-value" data-mini-control="height" data-index="${index}" data-mini-kind="number" type="number" min="20" max="100" value="${mini.height}"><span class="mini-unit">mm</span></label><label class="mini-control"><span>Art zoom</span><input data-mini-control="artScale" data-index="${index}" data-mini-kind="range" type="range" min="50" max="160" value="${mini.artScale}"><input class="mini-value" data-mini-control="artScale" data-index="${index}" data-mini-kind="number" type="number" min="50" max="160" value="${mini.artScale}"><span class="mini-unit">%</span></label><label class="mini-control"><span>Base</span><input data-mini-control="base" data-index="${index}" data-mini-kind="range" type="range" min="15" max="75" value="${mini.base}"><input class="mini-value" data-mini-control="base" data-index="${index}" data-mini-kind="number" type="number" min="15" max="75" value="${mini.base}"><span class="mini-unit">mm</span></label><label class="mini-control"><span>Copies</span><input data-mini-control="copies" data-index="${index}" data-mini-kind="range" type="range" min="1" max="12" value="${mini.copies}"><input class="mini-value" data-mini-control="copies" data-index="${index}" data-mini-kind="number" type="number" min="1" max="12" value="${mini.copies}"><span class="mini-unit"></span></label></div></div><button class="icon-btn" data-remove="${index}" title="Remove ${escapeHtml(mini.name)}">×</button></div>`).join('') : '<p class="empty">Your uploaded adventurers will appear here.</p>';
                 const pageHeader = pageNumber => `<header class="paper-header"><strong>Paper Minis</strong><span>Page ${pageNumber} · Cut dotted borders · fold dashed lines</span></header>`;
                 const makeMini = placement => { const { mini, x, y, scale } = placement; const tabHeight = Math.max(8, Math.round(mini.base / 3)); const outline = state.silhouette ? '#202a35' : 'transparent'; return `<article class="mini" style="left:${mm(x)};top:${mm(y)};transform:scale(${scale});transform-origin:top left;--mini-w:${mm(mini.base + 8)};--mini-h:${mm(mini.height)};--tab-h:${mm(tabHeight)};--outline:${outline};--divider:${state.guides ? '#aeb8c4' : 'transparent'}"><div class="base-tab" ${state.guides ? '' : 'style="border-color:transparent"'}></div><div class="figure back"><img style="transform:scale(${mini.artScale / 100})" src="${mini.src}" alt="${escapeHtml(mini.name)}"></div><div class="fold" style="${state.guides ? '' : 'border-color:transparent'}"></div><div class="figure"><img style="transform:scale(${mini.artScale / 100})" src="${mini.src}" alt="${escapeHtml(mini.name)}"></div><div class="base-tab bottom" ${state.guides ? '' : 'style="border-color:transparent"'}></div>${state.guides ? '<span class="cut-label">cut</span>' : ''}</article>`; };
                 if (!total) {
@@ -804,15 +842,21 @@
             ['dragenter', 'dragover'].forEach(eventName => elements.dropZone.addEventListener(eventName, event => { event.preventDefault(); elements.dropZone.classList.add('dragging'); }));
             ['dragleave', 'drop'].forEach(eventName => elements.dropZone.addEventListener(eventName, event => { event.preventDefault(); elements.dropZone.classList.remove('dragging'); }));
             elements.dropZone.addEventListener('drop', event => addFiles(event.dataTransfer.files));
-            elements.height.addEventListener('input', event => { state.height = Number(event.target.value); render(); });
-            elements.baseSize.addEventListener('input', event => { state.base = Number(event.target.value); render(); });
+            elements.height.addEventListener('input', event => { state.height = Number(event.target.value); syncNumberAndRange(elements.height, elements.heightValue, state.height); render(); });
+            elements.heightValue.addEventListener('input', event => { const value = parseNumberValue(event.target.value); if (value !== null) { state.height = clampValue(value, 20, 100); syncNumberAndRange(elements.height, elements.heightValue, state.height); render(); } });
+            elements.heightValue.addEventListener('change', () => { syncNumberAndRange(elements.height, elements.heightValue, state.height); });
+            elements.baseSize.addEventListener('input', event => { state.base = Number(event.target.value); syncNumberAndRange(elements.baseSize, elements.baseValue, state.base); render(); });
+            elements.baseValue.addEventListener('input', event => { const value = parseNumberValue(event.target.value); if (value !== null) { state.base = clampValue(value, 15, 75); syncNumberAndRange(elements.baseSize, elements.baseValue, state.base); render(); } });
+            elements.baseValue.addEventListener('change', () => { syncNumberAndRange(elements.baseSize, elements.baseValue, state.base); });
             elements.copies.addEventListener('input', event => { state.copies = Math.min(12, Math.max(1, Number(event.target.value) || 1)); event.target.value = state.copies; render(); });
-            elements.margin.addEventListener('input', event => { state.margin = Number(event.target.value); render(); });
+            elements.margin.addEventListener('input', event => { state.margin = Number(event.target.value); syncNumberAndRange(elements.margin, elements.marginValue, state.margin); render(); });
+            elements.marginValue.addEventListener('input', event => { const value = parseNumberValue(event.target.value); if (value !== null) { state.margin = clampValue(value, 5, 25); syncNumberAndRange(elements.margin, elements.marginValue, state.margin); render(); } });
+            elements.marginValue.addEventListener('change', () => { syncNumberAndRange(elements.margin, elements.marginValue, state.margin); });
             elements.pageSize.addEventListener('change', event => { state.page = event.target.value; render(); });
             elements.guides.addEventListener('change', event => { state.guides = event.target.checked; render(); });
             elements.silhouette.addEventListener('change', event => { state.silhouette = event.target.checked; render(); });
-            elements.miniList.addEventListener('input', event => { const control = event.target.dataset.miniControl; if (control) { event.target.nextElementSibling.textContent = `${event.target.value}${control === 'artScale' ? '%' : control === 'copies' ? '' : ' mm'}`; } });
-            elements.miniList.addEventListener('change', event => { const index = event.target.dataset.index; const control = event.target.dataset.miniControl; if (index !== undefined && control) { const mini = state.minis[Number(index)]; mini[control] = Number(event.target.value); if (control === 'base') { mini.baseAuto = false; } else if (mini.baseAuto) { mini.base = getAutoBase(mini); } render(); } });
+            elements.miniList.addEventListener('input', event => { const control = event.target.dataset.miniControl; const index = event.target.dataset.index; const kind = event.target.dataset.miniKind; if (control && index !== undefined) { const mini = state.minis[Number(index)]; const value = parseNumberValue(event.target.value); if (value !== null) { mini[control] = clampValue(value, Number(event.target.min), Number(event.target.max)); const row = event.target.closest('.mini-control'); if (row) { row.querySelectorAll(`[data-mini-control="${control}"]`).forEach(input => { input.value = mini[control]; }); } if (control === 'base') { mini.baseAuto = false; } else if (mini.baseAuto) { mini.base = getAutoBase(mini); } if (kind === 'range') { render(); } } } });
+            elements.miniList.addEventListener('change', event => { const index = event.target.dataset.index; const control = event.target.dataset.miniControl; if (index !== undefined && control) { const mini = state.minis[Number(index)]; const value = parseNumberValue(event.target.value); if (value !== null) { mini[control] = clampValue(value, Number(event.target.min), Number(event.target.max)); if (control === 'base') { mini.baseAuto = false; } else if (mini.baseAuto) { mini.base = getAutoBase(mini); } } render(); } });
             elements.miniList.addEventListener('click', event => { const index = event.target.dataset.remove; if (index !== undefined) { state.minis.splice(Number(index), 1); render(); } });
             elements.clearButton.addEventListener('click', () => { state.minis = []; render(); });
             elements.printButton.addEventListener('click', () => window.print());
