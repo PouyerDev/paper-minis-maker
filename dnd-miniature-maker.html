@@ -1,0 +1,773 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Paper Minis — Offline D&amp;D Miniature Maker</title>
+    <style>
+        :root {
+            --ink: #e9edf5;
+            --muted: #aab5c6;
+            --panel: #151d2a;
+            --panel-2: #1e2939;
+            --line: #354255;
+            --accent: #78d3a6;
+            --paper: #fff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-width: 320px;
+            color: var(--ink);
+            background: #0d1420;
+            font: 15px/1.4 Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .app {
+            display: grid;
+            grid-template-columns: 340px minmax(0, 1fr);
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            padding: 24px;
+            background: var(--panel);
+            border-right: 1px solid #273246;
+            overflow-y: auto;
+        }
+
+        .brand {
+            display: flex;
+            gap: 11px;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .brand-mark {
+            display: grid;
+            place-items: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: var(--accent);
+            color: #10231c;
+            font-size: 21px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 20px;
+            letter-spacing: -.02em;
+        }
+
+        .eyebrow {
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .section {
+            padding: 18px 0;
+            border-top: 1px solid var(--line);
+        }
+
+        .section h2 {
+            margin: 0 0 12px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: #c8d1df;
+        }
+
+        .upload {
+            display: flex;
+            min-height: 104px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border: 1.5px dashed #52627a;
+            border-radius: 12px;
+            color: var(--muted);
+            text-align: center;
+            transition: .2s;
+        }
+
+        .upload:hover,
+        .upload.dragging {
+            border-color: var(--accent);
+            background: #1c302b;
+            color: #eafff3;
+        }
+
+        .upload strong {
+            color: var(--ink);
+        }
+
+        .upload input {
+            display: none;
+        }
+
+        .field {
+            margin-top: 13px;
+        }
+
+        .field label,
+        .range-line label {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .field label output {
+            color: var(--ink);
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            border: 1px solid #435168;
+            border-radius: 8px;
+            padding: 9px 10px;
+            background: #111925;
+            color: var(--ink);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent);
+        }
+
+        .toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 10px 0;
+            color: #d6deeb;
+        }
+
+        .toggle input {
+            appearance: none;
+            width: 36px;
+            height: 21px;
+            margin: 0;
+            border-radius: 50px;
+            background: #415066;
+            position: relative;
+            transition: .2s;
+        }
+
+        .toggle input::after {
+            content: "";
+            width: 15px;
+            height: 15px;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            border-radius: 50%;
+            background: #fff;
+            transition: .2s;
+        }
+
+        .toggle input:checked {
+            background: var(--accent);
+        }
+
+        .toggle input:checked::after {
+            transform: translateX(15px);
+        }
+
+        .mini-list {
+            display: grid;
+            gap: 9px;
+            max-height: 290px;
+            overflow: auto;
+            padding-right: 2px;
+        }
+
+        .empty {
+            color: var(--muted);
+            font-size: 13px;
+            padding: 6px 0;
+        }
+
+        .mini-row {
+            display: grid;
+            grid-template-columns: 45px 1fr auto;
+            align-items: start;
+            gap: 9px;
+            padding: 7px;
+            background: var(--panel-2);
+            border: 1px solid #303c4e;
+            border-radius: 9px;
+        }
+
+        .mini-row img {
+            width: 45px;
+            height: 53px;
+            object-fit: contain;
+            background: #f8fafc;
+            border-radius: 5px;
+        }
+
+        .mini-row strong {
+            display: block;
+            max-width: 158px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            font-size: 13px;
+        }
+
+        .mini-row small {
+            color: var(--muted);
+        }
+
+        .mini-details {
+            min-width: 0;
+        }
+
+        .mini-controls {
+            display: grid;
+            gap: 6px;
+            margin-top: 7px;
+        }
+
+        .mini-control {
+            display: grid;
+            grid-template-columns: 38px 1fr 38px;
+            align-items: center;
+            gap: 6px;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .mini-control input {
+            min-width: 0;
+            margin: 0;
+        }
+
+        .mini-control output {
+            color: var(--ink);
+            font-size: 10px;
+            text-align: right;
+        }
+
+        .icon-btn {
+            width: 29px;
+            height: 29px;
+            border: 0;
+            border-radius: 6px;
+            color: #f8bdc4;
+            background: #3b2730;
+            font-size: 17px;
+        }
+
+        .button-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .button,
+        .button-secondary {
+            min-height: 42px;
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+
+        .button {
+            border: 0;
+            color: #10231c;
+            background: var(--accent);
+        }
+
+        .button:hover {
+            background: #a0ebc3;
+        }
+
+        .button-secondary {
+            border: 1px solid #506078;
+            color: var(--ink);
+            background: #202b3c;
+        }
+
+        .helper {
+            margin: 10px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .workspace {
+            min-width: 0;
+            padding: 32px clamp(18px, 4vw, 70px);
+            overflow: auto;
+            background: radial-gradient(circle at 50% 0, #27354b 0, #111a29 54%);
+        }
+
+        .workspace-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 16px;
+            margin: 0 auto 20px;
+            max-width: 970px;
+        }
+
+        .workspace-head h2 {
+            margin: 3px 0 0;
+            font-size: 24px;
+            letter-spacing: -.03em;
+        }
+
+        .sheet-status {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .paper-stage {
+            display: flex;
+            justify-content: center;
+            padding: 12px;
+        }
+
+        .paper-book {
+            display: grid;
+            gap: 28px;
+            width: 816px;
+            flex: 0 0 816px;
+        }
+
+        .paper {
+            width: 794px;
+            flex: 0 0 794px;
+            min-height: 1123px;
+            padding: 45px;
+            background: var(--paper);
+            color: #1d2938;
+            box-shadow: 0 18px 48px #050a1280;
+            transition: width .2s, min-height .2s;
+            overflow: hidden;
+        }
+
+        .paper.letter {
+            width: 816px;
+            flex-basis: 816px;
+            min-height: 1056px;
+        }
+
+        .paper-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #d8dee8;
+        }
+
+        .paper-header strong {
+            font-size: 15px;
+        }
+
+        .paper-header span {
+            color: #657285;
+            font-size: 11px;
+        }
+
+        .sheet {
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 0;
+            padding-top: 16px;
+        }
+
+        .sheet.packed {
+            position: relative;
+            display: block;
+            padding-top: 0;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .sheet.packed .mini {
+            position: absolute;
+        }
+
+        .sheet.page-sheet {
+            position: relative;
+            height: var(--sheet-height);
+            padding-top: 0;
+            gap: 1.5mm;
+            overflow: hidden;
+        }
+
+        .sheet.page-sheet .mini {
+            position: absolute;
+        }
+
+        .paper-empty {
+            display: grid;
+            min-height: 720px;
+            place-items: center;
+            width: 100%;
+            color: #8691a1;
+            text-align: center;
+            border: 2px dashed #d6dce5;
+        }
+
+        .paper-empty div {
+            max-width: 280px;
+        }
+
+        .paper-empty b {
+            display: block;
+            margin-bottom: 7px;
+            color: #4d5d70;
+            font-size: 17px;
+        }
+
+        .mini {
+            position: relative;
+            display: flex;
+            width: var(--mini-w);
+            height: calc(var(--mini-h) + var(--mini-h) + var(--tab-h) + var(--tab-h) + 8px);
+            flex: 0 0 var(--mini-w);
+            flex-direction: column;
+            align-items: center;
+            page-break-inside: avoid;
+            overflow: visible;
+            border: 1px dotted var(--divider, #aeb8c4);
+        }
+
+        .figure {
+            position: relative;
+            display: flex;
+            width: 100%;
+            height: var(--mini-h);
+            align-items: flex-end;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .figure img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 0 var(--outline)) drop-shadow(1px 0 0 var(--outline)) drop-shadow(-1px 0 0 var(--outline)) drop-shadow(0 1px 0 var(--outline)) drop-shadow(0 -1px 0 var(--outline));
+        }
+
+        .figure.back {
+            transform: rotate(180deg);
+        }
+
+        .fold {
+            width: 100%;
+            border-top: 1px dashed #8f9baa;
+        }
+
+        .base-tab {
+            position: relative;
+            width: 100%;
+            height: var(--tab-h);
+            border: 1px solid #768496;
+            border-bottom: 0;
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            background: linear-gradient(125deg, #f8fafc, #e7ebf0);
+        }
+
+        .base-tab::after {
+            content: "fold";
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            color: #8893a2;
+            font-size: 8px;
+            transform: translate(-50%, -50%);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .base-tab.bottom {
+            border: 1px solid #768496;
+            border-top: 0;
+            border-radius: 0 0 50% 50% / 0 0 100% 100%;
+        }
+
+        .base-tab.bottom::after {
+            top: 42%;
+        }
+
+        .cut-label {
+            position: absolute;
+            right: 2px;
+            bottom: calc(var(--tab-h) + 3px);
+            color: #9aa4b0;
+            font-size: 7px;
+            transform: rotate(-90deg);
+            transform-origin: right bottom;
+        }
+
+        .note {
+            color: #6d7887;
+            font-size: 11px;
+            margin-top: 15px;
+        }
+
+        @media (max-width:850px) {
+            .app {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                border-right: 0;
+                border-bottom: 1px solid #273246;
+            }
+
+            .workspace {
+                padding: 24px 10px;
+            }
+
+            .paper {
+                transform-origin: top center;
+            }
+        }
+
+        @media print {
+            @page {
+                margin: 0;
+            }
+
+            body {
+                background: #fff;
+            }
+
+            .sidebar,
+            .workspace-head {
+                display: none !important;
+            }
+
+            .app,
+            .workspace,
+            .paper-stage,
+            .paper-book {
+                display: block;
+                padding: 0;
+                background: #fff;
+            }
+
+            .paper {
+                width: 210mm !important;
+                min-height: 297mm !important;
+                padding: 12mm;
+                box-shadow: none;
+                break-after: page;
+            }
+
+            .paper:last-child {
+                break-after: auto;
+            }
+
+            .paper.letter {
+                width: 216mm !important;
+                min-height: 279mm !important;
+            }
+
+            .mini {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="app">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-mark">♟</div>
+                <div>
+                    <div class="eyebrow">Offline print studio</div>
+                    <h1>Paper
+                        Minis</h1>
+                </div>
+            </div>
+            <section class="section">
+                <h2>Character art</h2>
+                <label class="upload" id="dropZone"><strong>Upload character
+                        images</strong><span>Drop PNG, JPG, WEBP, or SVG
+                        here</span><input id="imageUpload" type="file" accept="image/*" multiple></label>
+            </section>
+            <section class="section">
+                <h2>New miniature defaults</h2>
+                <div class="field"><label for="height"><span>Figure
+                            height</span><output id="heightOutput">40
+                            mm</output></label><input id="height" type="range" min="20" max="100" value="40"></div>
+                <div class="field"><label for="baseSize"><span>Base
+                            diameter</span><output id="baseOutput">25
+                            mm</output></label><input id="baseSize" type="range" min="15" max="75" value="25"></div>
+                <div class="field"><label for="copies"><span>Copies for new
+                            minis</span></label><input id="copies" type="number" min="1" max="12" value="1"></div>
+                <p class="helper">These settings apply to newly uploaded art. Each mini can be adjusted below.</p>
+            </section>
+            <section class="section">
+                <h2>Print options</h2>
+                <div class="field"><label for="pageSize"><span>Paper
+                            size</span></label><select id="pageSize">
+                        <option value="a4">A4</option>
+                        <option value="letter">Papel carta (US Letter)</option>
+                    </select></div>
+                <div class="field"><label for="margin"><span>Page
+                            margin</span><output id="marginOutput">12
+                            mm</output></label><input id="margin" type="range" min="5" max="25" value="12"></div>
+                <label class="toggle"><span>Show cut / fold
+                        guides</span><input id="guides" type="checkbox" checked></label>
+                <label class="toggle"><span>Outline artwork
+                        silhouette</span><input id="silhouette" type="checkbox" checked></label>
+            </section>
+            <section class="section">
+                <h2>Miniatures <span id="miniCount">(0)</span></h2>
+                <div class="mini-list" id="miniList">
+                    <p class="empty">Your
+                        uploaded adventurers will appear here.</p>
+                </div>
+            </section>
+            <div class="button-row"><button class="button" id="printButton">Print sheet</button><button
+                    class="button-secondary" id="clearButton">Clear
+                    all</button></div>
+            <p class="helper">Everything stays in this browser tab. No
+                account, upload, or internet connection required.</p>
+        </aside>
+        <section class="workspace">
+            <header class="workspace-head">
+                <div>
+                    <div class="eyebrow">Live
+                        layout</div>
+                    <h2>Print-ready miniature
+                        sheet</h2>
+                </div>
+                <div class="sheet-status" id="sheetStatus">Add art to start packing the
+                    page</div>
+            </header>
+            <div class="paper-stage">
+                <div class="paper-book" id="paper"><article class="paper">
+                    <header class="paper-header"><strong>Paper
+                            Minis</strong><span>Cut solid outlines · fold
+                            dashed lines · glue base tabs
+                            together</span></header>
+                    <div class="sheet" id="sheet"></div>
+                    <p class="note" id="paperNote"></p>
+                </article></div>
+            </div>
+        </section>
+    </main>
+    <script>
+        (() => {
+            const state = { minis: [], height: 40, base: 25, copies: 1, margin: 12, page: 'a4', guides: true, silhouette: true };
+            const elements = Object.fromEntries(['imageUpload', 'dropZone', 'height', 'heightOutput', 'baseSize', 'baseOutput', 'copies', 'pageSize', 'margin', 'marginOutput', 'guides', 'silhouette', 'miniList', 'miniCount', 'sheet', 'paper', 'sheetStatus', 'paperNote', 'printButton', 'clearButton'].map(id => [id, document.getElementById(id)]));
+            const mm = value => `${value}mm`;
+            const escapeHtml = value => value.replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+            const clampBase = value => Math.max(15, Math.min(75, Math.round(value)));
+            const getAutoBase = mini => clampBase(mini.height * mini.aspect * (mini.artScale / 100) + 6);
+
+            function render() {
+                const total = state.minis.reduce((sum, mini) => sum + mini.copies, 0);
+                const pageSize = state.page === 'letter' ? { width: 216, height: 279 } : { width: 210, height: 297 };
+                const contentWidth = pageSize.width - (state.margin * 2) - 1;
+                const contentHeight = pageSize.height - (state.margin * 2) - 10;
+                const packGap = 1.5;
+                const pageClass = state.page === 'letter' ? ' letter' : '';
+                elements.heightOutput.textContent = `${state.height} mm`;
+                elements.baseOutput.textContent = `${state.base} mm`;
+                elements.marginOutput.textContent = `${state.margin} mm`;
+                elements.miniCount.textContent = `(${state.minis.length})`;
+                elements.miniList.innerHTML = state.minis.length ? state.minis.map((mini, index) => `<div class="mini-row"><img src="${mini.src}" alt=""><div class="mini-details"><strong title="${escapeHtml(mini.name)}">${escapeHtml(mini.name)}</strong><small>${mini.copies} ${mini.copies === 1 ? 'copy' : 'copies'}</small><div class="mini-controls"><label class="mini-control"><span>Height</span><input data-mini-control="height" data-index="${index}" type="range" min="20" max="100" value="${mini.height}"><output>${mini.height} mm</output></label><label class="mini-control"><span>Art zoom</span><input data-mini-control="artScale" data-index="${index}" type="range" min="50" max="160" value="${mini.artScale}"><output>${mini.artScale}%</output></label><label class="mini-control"><span>Base</span><input data-mini-control="base" data-index="${index}" type="range" min="15" max="75" value="${mini.base}"><output>${mini.base} mm</output></label><label class="mini-control"><span>Copies</span><input data-mini-control="copies" data-index="${index}" type="range" min="1" max="12" value="${mini.copies}"><output>${mini.copies}</output></label></div></div><button class="icon-btn" data-remove="${index}" title="Remove ${escapeHtml(mini.name)}">×</button></div>`).join('') : '<p class="empty">Your uploaded adventurers will appear here.</p>';
+                const pageHeader = pageNumber => `<header class="paper-header"><strong>Paper Minis</strong><span>Page ${pageNumber} · Cut dotted borders · fold dashed lines</span></header>`;
+                const makeMini = placement => { const { mini, x, y, scale } = placement; const tabHeight = Math.max(8, Math.round(mini.base / 3)); const outline = state.silhouette ? '#202a35' : 'transparent'; return `<article class="mini" style="left:${mm(x)};top:${mm(y)};transform:scale(${scale});transform-origin:top left;--mini-w:${mm(mini.base + 8)};--mini-h:${mm(mini.height)};--tab-h:${mm(tabHeight)};--outline:${outline};--divider:${state.guides ? '#aeb8c4' : 'transparent'}"><div class="base-tab" ${state.guides ? '' : 'style="border-color:transparent"'}></div><div class="figure back"><img style="transform:scale(${mini.artScale / 100})" src="${mini.src}" alt="${escapeHtml(mini.name)}"></div><div class="fold" style="${state.guides ? '' : 'border-color:transparent'}"></div><div class="figure"><img style="transform:scale(${mini.artScale / 100})" src="${mini.src}" alt="${escapeHtml(mini.name)}"></div><div class="base-tab bottom" ${state.guides ? '' : 'style="border-color:transparent"'}></div>${state.guides ? '<span class="cut-label">cut</span>' : ''}</article>`; };
+                if (!total) {
+                    elements.paper.innerHTML = `<article class="paper${pageClass}" style="padding:${mm(state.margin)}">${pageHeader(1)}<div class="sheet page-sheet" style="--sheet-height:${mm(contentHeight)}"><div class="paper-empty"><div><b>Your paper sheet is waiting.</b>Upload character art from the panel to create double-sided, foldable D&amp;D minis with built-in base tabs.</div></div></div></article>`;
+                    elements.sheetStatus.textContent = 'Add art to start packing the page';
+                    return;
+                }
+                const figures = state.minis.flatMap(mini => Array.from({ length: mini.copies }, () => mini)).sort((first, second) => {
+                    const firstHeight = (first.height * 2) + (Math.max(8, Math.round(first.base / 3)) * 2);
+                    const secondHeight = (second.height * 2) + (Math.max(8, Math.round(second.base / 3)) * 2);
+                    return secondHeight - firstHeight || second.base - first.base;
+                });
+                const pages = [[]];
+                let pageIndex = 0, cursorX = 0, cursorY = 0, rowHeight = 0, scaledCount = 0;
+                figures.forEach(mini => {
+                    const tabHeight = Math.max(8, Math.round(mini.base / 3));
+                    const originalWidth = mini.base + 8;
+                    const originalHeight = (mini.height * 2) + (tabHeight * 2) + 2.2;
+                    const scale = Math.min(1, contentWidth / originalWidth, contentHeight / originalHeight);
+                    const miniWidth = originalWidth * scale;
+                    const miniHeight = originalHeight * scale;
+                    if (scale < 1) { scaledCount += 1; }
+                    if (cursorX > 0 && cursorX + packGap + miniWidth > contentWidth) { cursorX = 0; cursorY += rowHeight + packGap; rowHeight = 0; }
+                    if (cursorY > 0 && cursorY + miniHeight > contentHeight) { pages.push([]); pageIndex += 1; cursorX = 0; cursorY = 0; rowHeight = 0; }
+                    pages[pageIndex].push({ mini, x: cursorX, y: cursorY, scale });
+                    cursorX += miniWidth + packGap;
+                    rowHeight = Math.max(rowHeight, miniHeight);
+                });
+                elements.paper.innerHTML = pages.map((page, index) => `<article class="paper${pageClass}" style="padding:${mm(state.margin)}">${pageHeader(index + 1)}<div class="sheet page-sheet" style="--sheet-height:${mm(contentHeight)}">${page.map(makeMini).join('')}</div></article>`).join('');
+                elements.sheetStatus.textContent = `${total} ${total === 1 ? 'miniature' : 'miniatures'} · ${pages.length} ${pages.length === 1 ? 'page' : 'pages'} · ${scaledCount ? `${scaledCount} fit to page` : 'no split miniatures'}`;
+            }
+            function addFiles(files) {
+                [...files].filter(file => file.type.startsWith('image/')).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = event => {
+                        const image = new Image();
+                        image.onload = () => {
+                            const mini = { name: file.name.replace(/\.[^/.]+$/, ''), src: event.target.result, height: state.height, artScale: 100, copies: state.copies, aspect: image.naturalWidth / image.naturalHeight, baseAuto: true };
+                            mini.base = getAutoBase(mini);
+                            state.minis.push(mini);
+                            render();
+                        };
+                        image.src = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+            elements.imageUpload.addEventListener('change', event => { addFiles(event.target.files); event.target.value = ''; });
+            ['dragenter', 'dragover'].forEach(eventName => elements.dropZone.addEventListener(eventName, event => { event.preventDefault(); elements.dropZone.classList.add('dragging'); }));
+            ['dragleave', 'drop'].forEach(eventName => elements.dropZone.addEventListener(eventName, event => { event.preventDefault(); elements.dropZone.classList.remove('dragging'); }));
+            elements.dropZone.addEventListener('drop', event => addFiles(event.dataTransfer.files));
+            elements.height.addEventListener('input', event => { state.height = Number(event.target.value); render(); });
+            elements.baseSize.addEventListener('input', event => { state.base = Number(event.target.value); render(); });
+            elements.copies.addEventListener('input', event => { state.copies = Math.min(12, Math.max(1, Number(event.target.value) || 1)); event.target.value = state.copies; render(); });
+            elements.margin.addEventListener('input', event => { state.margin = Number(event.target.value); render(); });
+            elements.pageSize.addEventListener('change', event => { state.page = event.target.value; render(); });
+            elements.guides.addEventListener('change', event => { state.guides = event.target.checked; render(); });
+            elements.silhouette.addEventListener('change', event => { state.silhouette = event.target.checked; render(); });
+            elements.miniList.addEventListener('input', event => { const control = event.target.dataset.miniControl; if (control) { event.target.nextElementSibling.textContent = `${event.target.value}${control === 'artScale' ? '%' : control === 'copies' ? '' : ' mm'}`; } });
+            elements.miniList.addEventListener('change', event => { const index = event.target.dataset.index; const control = event.target.dataset.miniControl; if (index !== undefined && control) { const mini = state.minis[Number(index)]; mini[control] = Number(event.target.value); if (control === 'base') { mini.baseAuto = false; } else if (mini.baseAuto) { mini.base = getAutoBase(mini); } render(); } });
+            elements.miniList.addEventListener('click', event => { const index = event.target.dataset.remove; if (index !== undefined) { state.minis.splice(Number(index), 1); render(); } });
+            elements.clearButton.addEventListener('click', () => { state.minis = []; render(); });
+            elements.printButton.addEventListener('click', () => window.print());
+            render();
+        })();
+    </script>
+</body>
+
+</html>
