@@ -504,11 +504,17 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
+            transform: scale(var(--art-scale, 1));
+            transform-origin: center center;
             filter: drop-shadow(0 0 0 var(--outline)) drop-shadow(1px 0 0 var(--outline)) drop-shadow(-1px 0 0 var(--outline)) drop-shadow(0 1px 0 var(--outline)) drop-shadow(0 -1px 0 var(--outline));
         }
 
         .figure.back {
-            transform: rotate(180deg);
+            transform: none;
+        }
+
+        .figure.back img {
+            transform: scale(var(--art-scale, 1)) scaleY(-1);
         }
 
         .fold {
@@ -636,7 +642,7 @@
             <div class="brand">
                 <div class="brand-mark">♟</div>
                 <div>
-                    <div class="eyebrow">Offline print studio</div>
+                    <div class="eyebrow"> Created by PouyerDev</div>
                     <h1>Paper
                         Minis</h1>
                 </div>
@@ -683,8 +689,7 @@
             <div class="button-row"><button class="button" id="printButton">Print sheet</button><button
                     class="button-secondary" id="clearButton">Clear
                     all</button></div>
-            <p class="helper">Everything stays in this browser tab. No
-                account, upload, or internet connection required.</p>
+            <p class="helper">Everything stays in this browser tab.</p>
         </aside>
         <section class="workspace">
             <header class="workspace-head">
@@ -784,7 +789,7 @@
                 elements.miniCount.textContent = `(${state.minis.length})`;
                 elements.miniList.innerHTML = state.minis.length ? state.minis.map((mini, index) => `<div class="mini-row"><img src="${mini.src}" alt=""><div class="mini-details"><strong title="${escapeHtml(mini.name)}">${escapeHtml(mini.name)}</strong><small>${mini.copies} ${mini.copies === 1 ? 'copy' : 'copies'}</small><div class="mini-controls"><label class="mini-control"><span>Height</span><input data-mini-control="height" data-index="${index}" data-mini-kind="range" type="range" min="20" max="100" value="${mini.height}"><input class="mini-value" data-mini-control="height" data-index="${index}" data-mini-kind="number" type="number" min="20" max="100" value="${mini.height}"><span class="mini-unit">mm</span></label><label class="mini-control"><span>Art zoom</span><input data-mini-control="artScale" data-index="${index}" data-mini-kind="range" type="range" min="50" max="160" value="${mini.artScale}"><input class="mini-value" data-mini-control="artScale" data-index="${index}" data-mini-kind="number" type="number" min="50" max="160" value="${mini.artScale}"><span class="mini-unit">%</span></label><label class="mini-control"><span>Base</span><input data-mini-control="base" data-index="${index}" data-mini-kind="range" type="range" min="15" max="75" value="${mini.base}"><input class="mini-value" data-mini-control="base" data-index="${index}" data-mini-kind="number" type="number" min="15" max="75" value="${mini.base}"><span class="mini-unit">mm</span></label><label class="mini-control"><span>Copies</span><input data-mini-control="copies" data-index="${index}" data-mini-kind="range" type="range" min="1" max="12" value="${mini.copies}"><input class="mini-value" data-mini-control="copies" data-index="${index}" data-mini-kind="number" type="number" min="1" max="12" value="${mini.copies}"><span class="mini-unit"></span></label></div></div><button class="icon-btn" data-remove="${index}" title="Remove ${escapeHtml(mini.name)}">×</button></div>`).join('') : '<p class="empty">Your uploaded adventurers will appear here.</p>';
                 const pageHeader = pageNumber => `<header class="paper-header"><strong>Paper Minis</strong><span>Page ${pageNumber} · Cut dotted borders · fold dashed lines</span></header>`;
-                const makeMini = placement => { const { mini, x, y, scale } = placement; const tabHeight = Math.max(8, Math.round(mini.base / 3)); const outline = state.silhouette ? '#202a35' : 'transparent'; return `<article class="mini" style="left:${mm(x)};top:${mm(y)};transform:scale(${scale});transform-origin:top left;--mini-w:${mm(mini.base + 8)};--mini-h:${mm(mini.height)};--tab-h:${mm(tabHeight)};--outline:${outline};--divider:${state.guides ? '#aeb8c4' : 'transparent'}"><div class="base-tab" ${state.guides ? '' : 'style="border-color:transparent"'}></div><div class="figure back"><img style="transform:scale(${mini.artScale / 100})" src="${mini.src}" alt="${escapeHtml(mini.name)}"></div><div class="fold" style="${state.guides ? '' : 'border-color:transparent'}"></div><div class="figure"><img style="transform:scale(${mini.artScale / 100})" src="${mini.src}" alt="${escapeHtml(mini.name)}"></div><div class="base-tab bottom" ${state.guides ? '' : 'style="border-color:transparent"'}></div>${state.guides ? '<span class="cut-label">cut</span>' : ''}</article>`; };
+                const makeMini = placement => { const { mini, x, y, scale } = placement; const tabHeight = Math.max(8, Math.round(mini.base / 3)); const outline = state.silhouette ? '#202a35' : 'transparent'; return `<article class="mini" style="left:${mm(x)};top:${mm(y)};transform:scale(${scale});transform-origin:top left;--mini-w:${mm(mini.base + 8)};--mini-h:${mm(mini.height)};--tab-h:${mm(tabHeight)};--outline:${outline};--divider:${state.guides ? '#aeb8c4' : 'transparent'};--art-scale:${mini.artScale / 100}"><div class="base-tab" ${state.guides ? '' : 'style="border-color:transparent"'}></div><div class="figure back"><img src="${mini.src}" alt="${escapeHtml(mini.name)}"></div><div class="fold" style="${state.guides ? '' : 'border-color:transparent'}"></div><div class="figure"><img src="${mini.src}" alt="${escapeHtml(mini.name)}"></div><div class="base-tab bottom" ${state.guides ? '' : 'style="border-color:transparent"'}></div>${state.guides ? '<span class="cut-label">cut</span>' : ''}</article>`; };
                 if (!total) {
                     elements.paper.innerHTML = `<article class="paper${pageClass}" style="padding:${mm(state.margin)}">${pageHeader(1)}<div class="sheet page-sheet" style="--sheet-height:${mm(contentHeight)}"><div class="paper-empty"><div><b>Your paper sheet is waiting.</b>Upload character art from the panel to create double-sided, foldable D&amp;D minis with built-in base tabs.</div></div></div></article>`;
                     elements.sheetStatus.textContent = 'Add art to start packing the page';
