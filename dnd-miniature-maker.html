@@ -615,8 +615,7 @@
             <section class="section">
                 <h2>Character art</h2>
                 <label class="upload" id="dropZone"><strong>Upload character
-                        images</strong><span>Drop PNG, JPG, WEBP, or SVG
-                        here</span><input id="imageUpload" type="file" accept="image/*" multiple></label>
+                images</strong><span>Drop files here or paste an image from your clipboard</span><input id="imageUpload" type="file" accept="image/*" multiple></label>
             </section>
             <section class="section">
                 <h2>New miniature defaults</h2>
@@ -750,6 +749,16 @@
                 });
             }
             elements.imageUpload.addEventListener('change', event => { addFiles(event.target.files); event.target.value = ''; });
+            document.addEventListener('paste', event => {
+                const images = [...event.clipboardData.items]
+                    .filter(item => item.type.startsWith('image/'))
+                    .map(item => item.getAsFile())
+                    .filter(Boolean);
+                if (images.length) {
+                    event.preventDefault();
+                    addFiles(images);
+                }
+            });
             ['dragenter', 'dragover'].forEach(eventName => elements.dropZone.addEventListener(eventName, event => { event.preventDefault(); elements.dropZone.classList.add('dragging'); }));
             ['dragleave', 'drop'].forEach(eventName => elements.dropZone.addEventListener(eventName, event => { event.preventDefault(); elements.dropZone.classList.remove('dragging'); }));
             elements.dropZone.addEventListener('drop', event => addFiles(event.dataTransfer.files));

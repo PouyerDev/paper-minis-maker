@@ -4,7 +4,7 @@ An offline, single-file D&D paper-miniature maker. Open `dnd-miniature-maker.htm
 
 ## What it does
 
-- Upload one or more character images, then automatically pack copies side-by-side on a print sheet.
+- Upload, drag in, or paste one or more character images from your clipboard, then automatically pack copies side-by-side on a print sheet.
 - Creates a front and inverted back for each foldable miniature.
 - Automatically fits each new base to the artwork proportions, with optional per-mini manual base controls.
 - Adds dotted separators between miniatures plus two fold-and-glue base tabs.
