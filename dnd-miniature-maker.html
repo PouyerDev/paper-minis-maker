@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Paper Minis — Offline D&amp;D Miniature Maker</title>
-    <style>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Paper Minis — Offline D&amp;D Miniature Maker</title>
+        <style>
         :root {
             --ink: #e9edf5;
             --muted: #aab5c6;
@@ -229,7 +229,7 @@
             display: grid;
             grid-template-columns: 45px 1fr auto;
             align-items: start;
-            gap: 9px;
+            gap: 3px;
             width: 100%;
             min-width: 0;
             padding: 7px;
@@ -279,6 +279,10 @@
             font-size: 10px;
         }
 
+        .mini-control-text {
+            grid-template-columns: 28px minmax(0, 1fr) 14px;
+        }
+
         .mini-control input {
             min-width: 0;
             margin: 0;
@@ -294,6 +298,20 @@
             padding: 2px 4px;
             font-size: 10px;
             text-align: right;
+        }
+
+        .mini-control-text .mini-value {
+            width: 100%;
+            text-align: left;
+            border: 1px solid #435168;
+            border-radius: 8px;
+            padding: 9px 10px;
+            background: #111925;
+            color: var(--ink);
+        }
+
+        .mini-control-text .mini-unit {
+            display: none;
         }
 
         .mini-unit {
@@ -533,7 +551,7 @@
         }
 
         .base-tab::after {
-            content: "fold";
+            content: attr(data-fold-label);
             position: absolute;
             top: 55%;
             left: 50%;
@@ -634,103 +652,116 @@
             }
         }
     </style>
-</head>
+    </head>
 
-<body>
-    <main class="app">
-        <aside class="sidebar">
-            <div class="brand">
-                <div class="brand-mark">♟</div>
-                <div>
-                    <div class="eyebrow"> Created by PouyerDev</div>
-                    <h1>Paper
-                        Minis</h1>
+    <body>
+        <main class="app">
+            <aside class="sidebar">
+                <div class="brand">
+                    <div class="brand-mark">♟</div>
+                    <div>
+                        <div class="eyebrow"> Created by PouyerDev</div>
+                        <h1>Paper
+                            Minis</h1>
+                    </div>
                 </div>
-            </div>
-            <section class="section">
-                <h2>Character art</h2>
-                <label class="upload" id="dropZone"><strong>Upload character
-                        images</strong><span>Drop files here or paste an
-                        image from your clipboard</span><input id="imageUpload" type="file" accept="image/*"
-                        multiple></label>
+                <section class="section">
+                    <h2>Character art</h2>
+                    <label class="upload" id="dropZone"><strong>Upload character
+                            images</strong><span>Drop files here or paste an
+                            image from your clipboard</span><input
+                            id="imageUpload" type="file" accept="image/*"
+                            multiple></label>
+                </section>
+                <section class="section">
+                    <h2>New miniature defaults</h2>
+                    <div class="field"><label for="height"><span>Figure
+                                height</span><output id="heightOutput">40
+                                mm</output></label>
+                        <div class="slider-row"><input id="height" type="range"
+                                min="20" max="100" value="40"><input
+                                id="heightValue" class="slider-value"
+                                type="number" min="20" max="100"
+                                value="40"></div>
+                    </div>
+                    <div class="field"><label for="baseSize"><span>Base
+                                diameter</span><output id="baseOutput">25
+                                mm</output></label>
+                        <div class="slider-row"><input id="baseSize"
+                                type="range" min="15" max="75" value="25"><input
+                                id="baseValue" class="slider-value"
+                                type="number" min="15" max="75"
+                                value="25"></div>
+                    </div>
+                    <div class="field"><label for="copies"><span>Copies for new
+                                minis</span></label><input id="copies"
+                            type="number" min="1" max="12" value="1"></div>
+                    <p class="helper">These settings apply to newly uploaded
+                        art. Each mini can be adjusted below.</p>
+                </section>
+                <section class="section">
+                    <h2>Print options</h2>
+                    <div class="field"><label for="pageSize"><span>Paper
+                                size</span></label><select id="pageSize">
+                            <option value="a4">A4</option>
+                            <option value="letter">US Letter</option>
+                        </select></div>
+                    <div class="field"><label for="margin"><span>Page
+                                margin</span><output id="marginOutput">12
+                                mm</output></label>
+                        <div class="slider-row"><input id="margin" type="range"
+                                min="5" max="25" value="12"><input
+                                id="marginValue" class="slider-value"
+                                type="number" min="5" max="25" value="12"></div>
+                    </div>
+                    <label class="toggle"><span>Show cut / fold
+                            guides</span><input id="guides" type="checkbox"
+                            checked></label>
+                    <label class="toggle"><span>Outline artwork
+                            silhouette</span><input id="silhouette"
+                            type="checkbox" checked></label>
+                </section>
+                <section class="section">
+                    <h2>Miniatures <span id="miniCount">(0)</span></h2>
+                    <div class="mini-list" id="miniList">
+                        <p class="empty">Your
+                            uploaded adventurers will appear here.</p>
+                    </div>
+                </section>
+                <div class="button-row"><button class="button"
+                        id="printButton">Print sheet</button><button
+                        class="button-secondary" id="clearButton">Clear
+                        all</button></div>
+                <p class="helper">Everything stays in this browser tab.</p>
+            </aside>
+            <section class="workspace">
+                <header class="workspace-head">
+                    <div>
+                        <div class="eyebrow">Live
+                            layout</div>
+                        <h2>Print-ready miniature
+                            sheet</h2>
+                    </div>
+                    <div class="sheet-status" id="sheetStatus">Add art to start
+                        packing the
+                        page</div>
+                </header>
+                <div class="paper-stage">
+                    <div class="paper-book" id="paper">
+                        <article class="paper">
+                            <header class="paper-header"><strong>Paper
+                                    Minis</strong><span>Cut solid outlines ·
+                                    fold
+                                    dashed lines · glue base tabs
+                                    together</span></header>
+                            <div class="sheet" id="sheet"></div>
+                            <p class="note" id="paperNote"></p>
+                        </article>
+                    </div>
+                </div>
             </section>
-            <section class="section">
-                <h2>New miniature defaults</h2>
-                <div class="field"><label for="height"><span>Figure
-                            height</span><output id="heightOutput">40
-                            mm</output></label>
-                    <div class="slider-row"><input id="height" type="range" min="20" max="100" value="40"><input
-                            id="heightValue" class="slider-value" type="number" min="20" max="100" value="40"></div>
-                </div>
-                <div class="field"><label for="baseSize"><span>Base
-                            diameter</span><output id="baseOutput">25
-                            mm</output></label>
-                    <div class="slider-row"><input id="baseSize" type="range" min="15" max="75" value="25"><input
-                            id="baseValue" class="slider-value" type="number" min="15" max="75" value="25"></div>
-                </div>
-                <div class="field"><label for="copies"><span>Copies for new
-                            minis</span></label><input id="copies" type="number" min="1" max="12" value="1"></div>
-                <p class="helper">These settings apply to newly uploaded
-                    art. Each mini can be adjusted below.</p>
-            </section>
-            <section class="section">
-                <h2>Print options</h2>
-                <div class="field"><label for="pageSize"><span>Paper
-                            size</span></label><select id="pageSize">
-                        <option value="a4">A4</option>
-                        <option value="letter">US Letter</option>
-                    </select></div>
-                <div class="field"><label for="margin"><span>Page
-                            margin</span><output id="marginOutput">12
-                            mm</output></label>
-                    <div class="slider-row"><input id="margin" type="range" min="5" max="25" value="12"><input
-                            id="marginValue" class="slider-value" type="number" min="5" max="25" value="12"></div>
-                </div>
-                <label class="toggle"><span>Show cut / fold
-                        guides</span><input id="guides" type="checkbox" checked></label>
-                <label class="toggle"><span>Outline artwork
-                        silhouette</span><input id="silhouette" type="checkbox" checked></label>
-            </section>
-            <section class="section">
-                <h2>Miniatures <span id="miniCount">(0)</span></h2>
-                <div class="mini-list" id="miniList">
-                    <p class="empty">Your
-                        uploaded adventurers will appear here.</p>
-                </div>
-            </section>
-            <div class="button-row"><button class="button" id="printButton">Print sheet</button><button
-                    class="button-secondary" id="clearButton">Clear
-                    all</button></div>
-            <p class="helper">Everything stays in this browser tab.</p>
-        </aside>
-        <section class="workspace">
-            <header class="workspace-head">
-                <div>
-                    <div class="eyebrow">Live
-                        layout</div>
-                    <h2>Print-ready miniature
-                        sheet</h2>
-                </div>
-                <div class="sheet-status" id="sheetStatus">Add art to start
-                    packing the
-                    page</div>
-            </header>
-            <div class="paper-stage">
-                <div class="paper-book" id="paper">
-                    <article class="paper">
-                        <header class="paper-header"><strong>Paper
-                                Minis</strong><span>Cut solid outlines ·
-                                fold
-                                dashed lines · glue base tabs
-                                together</span></header>
-                        <div class="sheet" id="sheet"></div>
-                        <p class="note" id="paperNote"></p>
-                    </article>
-                </div>
-            </div>
-        </section>
-    </main>
-    <script>
+        </main>
+        <script>
         (() => {
             const state = { minis: [], height: 40, base: 25, copies: 1, margin: 12, page: 'a4', guides: true, silhouette: true };
             const elements = Object.fromEntries(['imageUpload', 'dropZone', 'height', 'heightValue', 'heightOutput', 'baseSize', 'baseValue', 'baseOutput', 'copies', 'pageSize', 'margin', 'marginValue', 'marginOutput', 'guides', 'silhouette', 'miniList', 'miniCount', 'sheet', 'paper', 'sheetStatus', 'paperNote', 'printButton', 'clearButton'].map(id => [id, document.getElementById(id)]));
@@ -789,6 +820,32 @@
                 return { src: output.toDataURL('image/png'), width: trimmedWidth, height: trimmedHeight };
             }
 
+            const getFoldLabel = mini => (mini.foldLabel || 'Fold').trim() || 'Fold';
+
+            const syncFoldLabelControls = () => {
+                elements.miniList.querySelectorAll('.mini-row').forEach((row, index) => {
+                    const controls = row.querySelector('.mini-controls');
+                    if (!controls) {
+                        return;
+                    }
+                    const foldLabel = getFoldLabel(state.minis[index]);
+                    if (controls.querySelector('[data-mini-control="foldLabel"]')) {
+                        controls.querySelector('[data-mini-control="foldLabel"]').value = foldLabel;
+                        return;
+                    }
+                    controls.insertAdjacentHTML('beforeend', `<label class="mini-control mini-control-text"><span>Name</span><input class="mini-value" data-mini-control="foldLabel" data-index="${index}" data-mini-kind="text" type="text" maxlength="24" value="${escapeHtml(foldLabel)}"><span class="mini-unit"></span></label>`);
+                });
+            };
+
+            const syncPaperFoldLabels = labels => {
+                elements.paper.querySelectorAll('.paper .mini').forEach((miniElement, index) => {
+                    const label = labels[index] || 'Fold';
+                    miniElement.querySelectorAll('.base-tab').forEach(tab => {
+                        tab.dataset.foldLabel = label;
+                    });
+                });
+            };
+
             function render() {
                 const total = state.minis.reduce((sum, mini) => sum + mini.copies, 0);
                 const pageSize = state.page === 'letter' ? { width: 216, height: 279 } : { width: 210, height: 297 };
@@ -803,7 +860,8 @@
                 elements.baseValue.value = state.base;
                 elements.marginValue.value = state.margin;
                 elements.miniCount.textContent = `(${state.minis.length})`;
-                elements.miniList.innerHTML = state.minis.length ? state.minis.map((mini, index) => `<div class="mini-row"><img src="${mini.src}" alt=""><div class="mini-details"><strong title="${escapeHtml(mini.name)}">${escapeHtml(mini.name)}</strong><small>${mini.copies} ${mini.copies === 1 ? 'copy' : 'copies'}</small><div class="mini-controls"><label class="mini-control"><span>Height</span><input data-mini-control="height" data-index="${index}" data-mini-kind="range" type="range" min="20" max="100" value="${mini.height}"><input class="mini-value" data-mini-control="height" data-index="${index}" data-mini-kind="number" type="number" min="20" max="100" value="${mini.height}"><span class="mini-unit">mm</span></label><label class="mini-control"><span>Art zoom</span><input data-mini-control="artScale" data-index="${index}" data-mini-kind="range" type="range" min="50" max="160" value="${mini.artScale}"><input class="mini-value" data-mini-control="artScale" data-index="${index}" data-mini-kind="number" type="number" min="50" max="160" value="${mini.artScale}"><span class="mini-unit">%</span></label><label class="mini-control"><span>Base</span><input data-mini-control="base" data-index="${index}" data-mini-kind="range" type="range" min="15" max="75" value="${mini.base}"><input class="mini-value" data-mini-control="base" data-index="${index}" data-mini-kind="number" type="number" min="15" max="75" value="${mini.base}"><span class="mini-unit">mm</span></label><label class="mini-control"><span>Copies</span><input data-mini-control="copies" data-index="${index}" data-mini-kind="range" type="range" min="1" max="12" value="${mini.copies}"><input class="mini-value" data-mini-control="copies" data-index="${index}" data-mini-kind="number" type="number" min="1" max="12" value="${mini.copies}"><span class="mini-unit"></span></label></div></div><button class="icon-btn" data-remove="${index}" title="Remove ${escapeHtml(mini.name)}">×</button></div>`).join('') : '<p class="empty">Your uploaded adventurers will appear here.</p>';
+                elements.miniList.innerHTML = state.minis.length ? state.minis.map((mini, index) => `<div class="mini-row"><img src="${mini.src}" alt=""><div class="mini-details"><strong title="${escapeHtml(mini.name)}">${escapeHtml(mini.name)}</strong><small>${mini.copies} ${mini.copies === 1 ? 'copy' : 'copies'}</small><div class="mini-controls"><label class="mini-control"><span>Height</span><input data-mini-control="height" data-index="${index}" data-mini-kind="range" type="range" min="20" max="100" value="${mini.height}"><input class="mini-value" data-mini-control="height" data-index="${index}" data-mini-kind="number" type="number" min="20" max="100" value="${mini.height}"><span class="mini-unit">mm</span></label><label class="mini-control"><span>Art zoom</span><input data-mini-control="artScale" data-index="${index}" data-mini-kind="range" type="range" min="50" max="160" value="${mini.artScale}"><input class="mini-value" data-mini-control="artScale" data-index="${index}" data-mini-kind="number" type="number" min="50" max="160" value="${mini.artScale}"><span class="mini-unit">%</span></label><label class="mini-control"><span>Base</span><input data-mini-control="base" data-index="${index}" data-mini-kind="range" type="range" min="15" max="75" value="${mini.base}"><input class="mini-value" data-mini-control="base" data-index="${index}" data-mini-kind="number" type="number" min="15" max="75" value="${mini.base}"><span class="mini-unit">mm</span></label><label class="mini-control"><span>Copies</span><input data-mini-control="copies" data-index="${index}" data-mini-kind="range" type="range" min="1" max="12" value="${mini.copies}"><input class="mini-value" data-mini-control="copies" data-index="${index}" data-mini-kind="number" type="number" min="1" max="12" value="${mini.copies}"><span class="mini-unit"></span></label></div></div><button class="icon-btn" data-remove="${index}" title="Remove ${escapeHtml(mini.name)}">×</button></div>`).join('') : '<p class="empty">Your uploaded miniatures will appear here.</p>';
+                syncFoldLabelControls();
                 const pageHeader = pageNumber => `<header class="paper-header"><strong>Paper Minis</strong><span>Page ${pageNumber} · Cut dotted borders · fold dashed lines</span></header>`;
                 const makeMini = placement => { const { mini, x, y, scale } = placement; const tabHeight = Math.max(8, Math.round(mini.base / 3)); const outline = state.silhouette ? '#202a35' : 'transparent'; return `<article class="mini" style="left:${mm(x)};top:${mm(y)};transform:scale(${scale});transform-origin:top left;--mini-w:${mm(mini.base + 8)};--mini-h:${mm(mini.height)};--tab-h:${mm(tabHeight)};--outline:${outline};--divider:${state.guides ? '#aeb8c4' : 'transparent'};--art-scale:${mini.artScale / 100}"><div class="base-tab" ${state.guides ? '' : 'style="border-color:transparent"'}></div><div class="figure back"><img src="${mini.src}" alt="${escapeHtml(mini.name)}"></div><div class="fold" style="${state.guides ? '' : 'border-color:transparent'}"></div><div class="figure"><img src="${mini.src}" alt="${escapeHtml(mini.name)}"></div><div class="base-tab bottom" ${state.guides ? '' : 'style="border-color:transparent"'}></div>${state.guides ? '<span class="cut-label">cut</span>' : ''}</article>`; };
                 if (!total) {
@@ -833,6 +891,7 @@
                     rowHeight = Math.max(rowHeight, miniHeight);
                 });
                 elements.paper.innerHTML = pages.map((page, index) => `<article class="paper${pageClass}" style="padding:${mm(state.margin)}">${pageHeader(index + 1)}<div class="sheet page-sheet" style="--sheet-height:${mm(contentHeight)}">${page.map(makeMini).join('')}</div></article>`).join('');
+                syncPaperFoldLabels(figures.map(mini => getFoldLabel(mini)));
                 elements.sheetStatus.textContent = `${total} ${total === 1 ? 'miniature' : 'miniatures'} · ${pages.length} ${pages.length === 1 ? 'page' : 'pages'} · ${scaledCount ? `${scaledCount} fit to page` : 'no split miniatures'}`;
             }
             async function addFiles(files) {
@@ -843,7 +902,7 @@
                         reader.readAsDataURL(file);
                     });
                     const trimmed = await trimTransparentPixels(dataUrl);
-                    const mini = { name: file.name.replace(/\.[^/.]+$/, ''), src: trimmed.src, height: state.height, artScale: 100, copies: state.copies, aspect: trimmed.width / trimmed.height, baseAuto: true };
+                    const mini = { name: file.name.replace(/\.[^/.]+$/, ''), src: trimmed.src, height: state.height, artScale: 100, copies: state.copies, aspect: trimmed.width / trimmed.height, baseAuto: true, foldLabel: 'Fold' };
                     mini.base = getAutoBase(mini);
                     state.minis.push(mini);
                     render();
@@ -876,14 +935,14 @@
             elements.pageSize.addEventListener('change', event => { state.page = event.target.value; render(); });
             elements.guides.addEventListener('change', event => { state.guides = event.target.checked; render(); });
             elements.silhouette.addEventListener('change', event => { state.silhouette = event.target.checked; render(); });
-            elements.miniList.addEventListener('input', event => { const control = event.target.dataset.miniControl; const index = event.target.dataset.index; const kind = event.target.dataset.miniKind; if (control && index !== undefined) { const mini = state.minis[Number(index)]; const value = parseNumberValue(event.target.value); if (value !== null) { mini[control] = clampValue(value, Number(event.target.min), Number(event.target.max)); const row = event.target.closest('.mini-control'); if (row) { row.querySelectorAll(`[data-mini-control="${control}"]`).forEach(input => { input.value = mini[control]; }); } if (control === 'base') { mini.baseAuto = false; } else if (mini.baseAuto) { mini.base = getAutoBase(mini); } if (kind === 'range') { render(); } } } });
-            elements.miniList.addEventListener('change', event => { const index = event.target.dataset.index; const control = event.target.dataset.miniControl; if (index !== undefined && control) { const mini = state.minis[Number(index)]; const value = parseNumberValue(event.target.value); if (value !== null) { mini[control] = clampValue(value, Number(event.target.min), Number(event.target.max)); if (control === 'base') { mini.baseAuto = false; } else if (mini.baseAuto) { mini.base = getAutoBase(mini); } } render(); } });
+            elements.miniList.addEventListener('input', event => { const control = event.target.dataset.miniControl; const index = event.target.dataset.index; const kind = event.target.dataset.miniKind; if (control && index !== undefined) { const mini = state.minis[Number(index)]; if (control === 'foldLabel') { mini.foldLabel = event.target.value; syncPaperFoldLabels([mini.foldLabel]); return; } const value = parseNumberValue(event.target.value); if (value !== null) { mini[control] = clampValue(value, Number(event.target.min), Number(event.target.max)); const row = event.target.closest('.mini-control'); if (row) { row.querySelectorAll(`[data-mini-control="${control}"]`).forEach(input => { input.value = mini[control]; }); } if (control === 'base') { mini.baseAuto = false; } else if (mini.baseAuto) { mini.base = getAutoBase(mini); } if (kind === 'range') { render(); } } } });
+            elements.miniList.addEventListener('change', event => { const index = event.target.dataset.index; const control = event.target.dataset.miniControl; if (index !== undefined && control) { const mini = state.minis[Number(index)]; if (control === 'foldLabel') { mini.foldLabel = event.target.value; render(); return; } const value = parseNumberValue(event.target.value); if (value !== null) { mini[control] = clampValue(value, Number(event.target.min), Number(event.target.max)); if (control === 'base') { mini.baseAuto = false; } else if (mini.baseAuto) { mini.base = getAutoBase(mini); } } render(); } });
             elements.miniList.addEventListener('click', event => { const index = event.target.dataset.remove; if (index !== undefined) { state.minis.splice(Number(index), 1); render(); } });
             elements.clearButton.addEventListener('click', () => { state.minis = []; render(); });
             elements.printButton.addEventListener('click', () => window.print());
             render();
         })();
     </script>
-</body>
+    </body>
 
 </html>
