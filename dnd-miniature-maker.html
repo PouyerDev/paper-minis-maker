@@ -650,19 +650,28 @@
             <section class="section">
                 <h2>Character art</h2>
                 <label class="upload" id="dropZone"><strong>Upload character
-                images</strong><span>Drop files here or paste an image from your clipboard</span><input id="imageUpload" type="file" accept="image/*" multiple></label>
+                        images</strong><span>Drop files here or paste an
+                        image from your clipboard</span><input id="imageUpload" type="file" accept="image/*"
+                        multiple></label>
             </section>
             <section class="section">
                 <h2>New miniature defaults</h2>
                 <div class="field"><label for="height"><span>Figure
                             height</span><output id="heightOutput">40
-                            mm</output></label><div class="slider-row"><input id="height" type="range" min="20" max="100" value="40"><input id="heightValue" class="slider-value" type="number" min="20" max="100" value="40"></div></div>
+                            mm</output></label>
+                    <div class="slider-row"><input id="height" type="range" min="20" max="100" value="40"><input
+                            id="heightValue" class="slider-value" type="number" min="20" max="100" value="40"></div>
+                </div>
                 <div class="field"><label for="baseSize"><span>Base
                             diameter</span><output id="baseOutput">25
-                            mm</output></label><div class="slider-row"><input id="baseSize" type="range" min="15" max="75" value="25"><input id="baseValue" class="slider-value" type="number" min="15" max="75" value="25"></div></div>
+                            mm</output></label>
+                    <div class="slider-row"><input id="baseSize" type="range" min="15" max="75" value="25"><input
+                            id="baseValue" class="slider-value" type="number" min="15" max="75" value="25"></div>
+                </div>
                 <div class="field"><label for="copies"><span>Copies for new
                             minis</span></label><input id="copies" type="number" min="1" max="12" value="1"></div>
-                <p class="helper">These settings apply to newly uploaded art. Each mini can be adjusted below.</p>
+                <p class="helper">These settings apply to newly uploaded
+                    art. Each mini can be adjusted below.</p>
             </section>
             <section class="section">
                 <h2>Print options</h2>
@@ -672,8 +681,11 @@
                         <option value="letter">US Letter</option>
                     </select></div>
                 <div class="field"><label for="margin"><span>Page
-                        margin</span><output id="marginOutput">12
-                        mm</output></label><div class="slider-row"><input id="margin" type="range" min="5" max="25" value="12"><input id="marginValue" class="slider-value" type="number" min="5" max="25" value="12"></div></div>
+                            margin</span><output id="marginOutput">12
+                            mm</output></label>
+                    <div class="slider-row"><input id="margin" type="range" min="5" max="25" value="12"><input
+                            id="marginValue" class="slider-value" type="number" min="5" max="25" value="12"></div>
+                </div>
                 <label class="toggle"><span>Show cut / fold
                         guides</span><input id="guides" type="checkbox" checked></label>
                 <label class="toggle"><span>Outline artwork
@@ -699,18 +711,22 @@
                     <h2>Print-ready miniature
                         sheet</h2>
                 </div>
-                <div class="sheet-status" id="sheetStatus">Add art to start packing the
+                <div class="sheet-status" id="sheetStatus">Add art to start
+                    packing the
                     page</div>
             </header>
             <div class="paper-stage">
-                <div class="paper-book" id="paper"><article class="paper">
-                    <header class="paper-header"><strong>Paper
-                            Minis</strong><span>Cut solid outlines · fold
-                            dashed lines · glue base tabs
-                            together</span></header>
-                    <div class="sheet" id="sheet"></div>
-                    <p class="note" id="paperNote"></p>
-                </article></div>
+                <div class="paper-book" id="paper">
+                    <article class="paper">
+                        <header class="paper-header"><strong>Paper
+                                Minis</strong><span>Cut solid outlines ·
+                                fold
+                                dashed lines · glue base tabs
+                                together</span></header>
+                        <div class="sheet" id="sheet"></div>
+                        <p class="note" id="paperNote"></p>
+                    </article>
+                </div>
             </div>
         </section>
     </main>
