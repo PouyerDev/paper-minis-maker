@@ -333,6 +333,21 @@
             font-size: 17px;
         }
 
+        .icon-btn-green {
+            width: auto;
+            height: 29px;
+            border: 0;
+            border-radius: 6px;
+            color: #10231c;
+            background: var(--accent);
+            font-size: 11px;
+            padding: 0 8px;
+        }
+
+        .icon-btn-green:hover {
+            background: #a0ebc3;
+        }
+
         .button-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -879,9 +894,13 @@
                     const foldLabel = getFoldLabel(state.minis[index]);
                     if (controls.querySelector('[data-mini-control="foldLabel"]')) {
                         controls.querySelector('[data-mini-control="foldLabel"]').value = foldLabel;
-                        return;
+                    } else {
+                        controls.insertAdjacentHTML('beforeend', `<label class="mini-control mini-control-text"><span>Name</span><input class="mini-value" data-mini-control="foldLabel" data-index="${index}" data-mini-kind="text" type="text" maxlength="24" value="${escapeHtml(foldLabel)}"><span class="mini-unit"></span></label>`);
                     }
-                    controls.insertAdjacentHTML('beforeend', `<label class="mini-control mini-control-text"><span>Name</span><input class="mini-value" data-mini-control="foldLabel" data-index="${index}" data-mini-kind="text" type="text" maxlength="24" value="${escapeHtml(foldLabel)}"><span class="mini-unit"></span></label>`);
+                    // Add Back image control after foldLabel (last in the list)
+                    if (!controls.querySelector('[data-back-upload]')) {
+                        controls.insertAdjacentHTML('beforeend', `<label class="mini-control mini-control-text"><span>Back image</span><input class="mini-value" type="file" accept="image/*" data-back-upload="${index}" style="display:none"><button class="icon-btn-green" data-back-upload="${index}" title="Upload back image for ${escapeHtml(state.minis[index].name)}" style="width:auto;padding:0 8px;font-size:11px">Upload Back</button></label>`);
+                    }
                 });
             };
 
@@ -921,7 +940,7 @@
                 elements.miniList.innerHTML = state.minis.length ? state.minis.map((mini, index) => `<div class="mini-row"><img src="${mini.src}" alt=""><div class="mini-details"><strong title="${escapeHtml(mini.name)}">${escapeHtml(mini.name)}</strong><small>${mini.copies} ${mini.copies === 1 ? 'copy' : 'copies'}</small><div class="mini-controls"><label class="mini-control"><span>Height</span><input data-mini-control="height" data-index="${index}" data-mini-kind="range" type="range" min="20" max="100" value="${mini.height}"><input class="mini-value" data-mini-control="height" data-index="${index}" data-mini-kind="number" type="number" min="20" max="100" value="${mini.height}"><span class="mini-unit">mm</span></label><label class="mini-control"><span>Art zoom</span><input data-mini-control="artScale" data-index="${index}" data-mini-kind="range" type="range" min="50" max="160" value="${mini.artScale}"><input class="mini-value" data-mini-control="artScale" data-index="${index}" data-mini-kind="number" type="number" min="50" max="160" value="${mini.artScale}"><span class="mini-unit">%</span></label><label class="mini-control"><span>Base</span><input data-mini-control="base" data-index="${index}" data-mini-kind="range" type="range" min="15" max="75" value="${mini.base}"><input class="mini-value" data-mini-control="base" data-index="${index}" data-mini-kind="number" type="number" min="15" max="75" value="${mini.base}"><span class="mini-unit">mm</span></label><label class="mini-control"><span>Copies</span><input data-mini-control="copies" data-index="${index}" data-mini-kind="range" type="range" min="1" max="12" value="${mini.copies}"><input class="mini-value" data-mini-control="copies" data-index="${index}" data-mini-kind="number" type="number" min="1" max="12" value="${mini.copies}"><span class="mini-unit"></span></label></div></div><button class="icon-btn" data-remove="${index}" title="Remove ${escapeHtml(mini.name)}">×</button></div>`).join('') : '<p class="empty">Your uploaded miniatures will appear here.</p>';
                 syncFoldLabelControls();
                 const pageHeader = pageNumber => `<header class="paper-header"><strong>Paper Minis</strong><span>Page ${pageNumber} · Cut dotted borders · fold dashed lines</span></header>`;
-                const makeMini = placement => { const { mini, x, y, scale } = placement; const tabHeight = Math.max(8, Math.round(mini.base / 3)); const outline = state.silhouette ? '#202a35' : 'transparent'; const dropShadow = state.silhouette ? `drop-shadow(0 0 0 ${outline}) drop-shadow(1px 0 0 ${outline}) drop-shadow(-1px 0 0 ${outline}) drop-shadow(0 1px 0 ${outline}) drop-shadow(0 -1px 0 ${outline})` : ''; const backFilter = (state.grayscaleBack ? 'grayscale(100%)' : '') + (state.grayscaleBack && state.silhouette ? ' ' : '') + dropShadow; return `<article class="mini" style="left:${mm(x)};top:${mm(y)};transform:scale(${scale});transform-origin:top left;--mini-w:${mm(mini.base + 8)};--mini-h:${mm(mini.height)};--tab-h:${mm(tabHeight)};--outline:${outline};--divider:${state.guides ? '#aeb8c4' : 'transparent'};--art-scale:${mini.artScale / 100}"><div class="base-tab" ${state.guides ? '' : 'style="border-color:transparent"'}></div><div class="figure back"><img src="${mini.src}" alt="${escapeHtml(mini.name)}" style="filter:${backFilter || 'none'}"></div><div class="fold" style="${state.guides ? '' : 'border-color:transparent'}"></div><div class="figure"><img src="${mini.src}" alt="${escapeHtml(mini.name)}"></div><div class="base-tab bottom" ${state.guides ? '' : 'style="border-color:transparent"'}></div>${state.guides ? '<span class="cut-label">cut</span>' : ''}</article>`; };
+                const makeMini = placement => { const { mini, x, y, scale } = placement; const tabHeight = Math.max(8, Math.round(mini.base / 3)); const outline = state.silhouette ? '#202a35' : 'transparent'; const dropShadow = state.silhouette ? `drop-shadow(0 0 0 ${outline}) drop-shadow(1px 0 0 ${outline}) drop-shadow(-1px 0 0 ${outline}) drop-shadow(0 1px 0 ${outline}) drop-shadow(0 -1px 0 ${outline})` : ''; const backFilter = (state.grayscaleBack ? 'grayscale(100%)' : '') + (state.grayscaleBack && state.silhouette ? ' ' : '') + dropShadow; return `<article class="mini" style="left:${mm(x)};top:${mm(y)};transform:scale(${scale});transform-origin:top left;--mini-w:${mm(mini.base + 8)};--mini-h:${mm(mini.height)};--tab-h:${mm(tabHeight)};--outline:${outline};--divider:${state.guides ? '#aeb8c4' : 'transparent'};--art-scale:${mini.artScale / 100}"><div class="base-tab" ${state.guides ? '' : 'style="border-color:transparent"'}></div><div class="figure back"><img src="${mini.backSrc || mini.src}" alt="${escapeHtml(mini.name)}" style="filter:${backFilter || 'none'}"></div><div class="fold" style="${state.guides ? '' : 'border-color:transparent'}"></div><div class="figure"><img src="${mini.src}" alt="${escapeHtml(mini.name)}"></div><div class="base-tab bottom" ${state.guides ? '' : 'style="border-color:transparent"'}></div>${state.guides ? '<span class="cut-label">cut</span>' : ''}</article>`; };
                 if (!total) {
                     elements.paper.innerHTML = `<article class="paper${pageClass}" style="padding:${mm(state.margin)}">${pageHeader(1)}<div class="sheet page-sheet" style="--sheet-height:${mm(contentHeight)}"><div class="paper-empty"><div><b>Your paper sheet is waiting.</b>Upload character art from the panel to create double-sided, foldable D&amp;D minis with built-in base tabs.</div></div></div></article>`;
                     elements.sheetStatus.textContent = 'Add art to start packing the page';
@@ -960,7 +979,7 @@
                         reader.readAsDataURL(file);
                     });
                     const trimmed = await trimTransparentPixels(dataUrl);
-                    const mini = { name: file.name.replace(/\.[^/.]+$/, ''), src: trimmed.src, height: state.height, artScale: 100, copies: state.copies, aspect: trimmed.width / trimmed.height, baseAuto: true, foldLabel: 'Fold' };
+                    const mini = { name: file.name.replace(/\.[^/.]+$/, ''), src: trimmed.src, backSrc: trimmed.src, height: state.height, artScale: 100, copies: state.copies, aspect: trimmed.width / trimmed.height, baseAuto: true, foldLabel: 'Fold' };
                     mini.base = getAutoBase(mini);
                     state.minis.push(mini);
                     render();
@@ -996,7 +1015,8 @@
             elements.grayscaleBack.addEventListener('change', event => { state.grayscaleBack = event.target.checked; render(); });
             elements.miniList.addEventListener('input', event => { const control = event.target.dataset.miniControl; const index = event.target.dataset.index; const kind = event.target.dataset.miniKind; if (control && index !== undefined) { const mini = state.minis[Number(index)]; if (control === 'foldLabel') { mini.foldLabel = event.target.value; syncPaperFoldLabels([mini.foldLabel]); return; } const value = parseNumberValue(event.target.value); if (value !== null) { mini[control] = clampValue(value, Number(event.target.min), Number(event.target.max)); const row = event.target.closest('.mini-control'); if (row) { row.querySelectorAll(`[data-mini-control="${control}"]`).forEach(input => { input.value = mini[control]; }); } if (control === 'base') { mini.baseAuto = false; } else if (mini.baseAuto) { mini.base = getAutoBase(mini); } } } });
             elements.miniList.addEventListener('change', event => { const index = event.target.dataset.index; const control = event.target.dataset.miniControl; if (index !== undefined && control) { const mini = state.minis[Number(index)]; if (control === 'foldLabel') { mini.foldLabel = event.target.value; render(); return; } const value = parseNumberValue(event.target.value); if (value !== null) { mini[control] = clampValue(value, Number(event.target.min), Number(event.target.max)); if (control === 'base') { mini.baseAuto = false; } else if (mini.baseAuto) { mini.base = getAutoBase(mini); } } render(); } });
-            elements.miniList.addEventListener('click', event => { const index = event.target.dataset.remove; if (index !== undefined) { state.minis.splice(Number(index), 1); render(); } });
+            elements.miniList.addEventListener('click', event => { const index = event.target.dataset.remove; if (index !== undefined) { state.minis.splice(Number(index), 1); render(); } const backUploadIndex = event.target.dataset.backUpload; if (backUploadIndex !== undefined) { const fileInput = event.target.closest('.mini-control').querySelector('input[type="file"]'); if (fileInput) fileInput.click(); } });
+            elements.miniList.addEventListener('change', event => { const fileInput = event.target; if (fileInput.matches('input[type="file"][data-back-upload]')) { const index = Number(fileInput.dataset.backUpload); const file = fileInput.files[0]; if (file && file.type.startsWith('image/')) { const reader = new FileReader(); reader.onload = async e => { const trimmed = await trimTransparentPixels(e.target.result); state.minis[index].backSrc = trimmed.src; render(); }; reader.readAsDataURL(file); } fileInput.value = ''; } });
             elements.clearButton.addEventListener('click', () => { state.minis = []; render(); });
             elements.printButton.addEventListener('click', () => window.print());
             render();
