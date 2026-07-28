@@ -1,12 +1,13 @@
 <!doctype html>
 <html lang="en">
 
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Paper Minis — Offline D&amp;D Miniature Maker</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♟</text></svg>">
-        <style>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Paper Minis — Offline D&amp;D Miniature Maker</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♟</text></svg>">
+    <style>
         :root {
             --ink: #e9edf5;
             --muted: #aab5c6;
@@ -653,119 +654,165 @@
             }
         }
     </style>
-    </head>
+</head>
 
-    <body>
-        <main class="app">
-            <aside class="sidebar">
-                <div class="brand">
-                    <div class="brand-mark">♟</div>
-                    <div>
-                        <div class="eyebrow"> Created by PouyerDev</div>
-                        <h1>Paper
-                            Minis</h1>
-                    </div>
+<body>
+    <main class="app">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-mark">♟</div>
+                <div>
+                    <div class="eyebrow"> Created by PouyerDev</div>
+                    <h1>Paper
+                        Minis</h1>
                 </div>
-                <section class="section">
-                    <h2>Character art</h2>
-                    <label class="upload" id="dropZone"><strong>Upload character
-                            images</strong><span>Drop files here or paste an
-                            image from your clipboard</span><input
-                            id="imageUpload" type="file" accept="image/*"
-                            multiple></label>
-                </section>
-                <section class="section">
-                    <h2>New miniature defaults</h2>
-                    <div class="field"><label for="height"><span>Figure
-                                height</span><output id="heightOutput">40
-                                mm</output></label>
-                        <div class="slider-row"><input id="height" type="range"
-                                min="20" max="100" value="40"><input
-                                id="heightValue" class="slider-value"
-                                type="number" min="20" max="100"
-                                value="40"></div>
-                    </div>
-                    <div class="field"><label for="baseSize"><span>Base
-                                diameter</span><output id="baseOutput">25
-                                mm</output></label>
-                        <div class="slider-row"><input id="baseSize"
-                                type="range" min="15" max="75" value="25"><input
-                                id="baseValue" class="slider-value"
-                                type="number" min="15" max="75"
-                                value="25"></div>
-                    </div>
-                    <div class="field"><label for="copies"><span>Copies for new
-                                minis</span></label><input id="copies"
-                            type="number" min="1" max="12" value="1"></div>
-                    <p class="helper">These settings apply to newly uploaded
-                        art. Each mini can be adjusted below.</p>
-                </section>
-                <section class="section">
-                    <h2>Print options</h2>
-                    <div class="field"><label for="pageSize"><span>Paper
-                                size</span></label><select id="pageSize">
-                            <option value="a4">A4</option>
-                            <option value="letter">US Letter</option>
-                        </select></div>
-                    <div class="field"><label for="margin"><span>Page
-                                margin</span><output id="marginOutput">12
-                                mm</output></label>
-                        <div class="slider-row"><input id="margin" type="range"
-                                min="5" max="25" value="12"><input
-                                id="marginValue" class="slider-value"
-                                type="number" min="5" max="25" value="12"></div>
-                    </div>
-                    <label class="toggle"><span>Show cut / fold
-                            guides</span><input id="guides" type="checkbox"
-                            checked></label>
-                    <label class="toggle"><span>Outline artwork
-                            silhouette</span><input id="silhouette"
-                            type="checkbox" checked></label>
-                </section>
-                <section class="section">
-                    <h2>Miniatures <span id="miniCount">(0)</span></h2>
-                    <div class="mini-list" id="miniList">
-                        <p class="empty">Your
-                            uploaded adventurers will appear here.</p>
-                    </div>
-                </section>
-                <div class="button-row"><button class="button"
-                        id="printButton">Print sheet</button><button
-                        class="button-secondary" id="clearButton">Clear
-                        all</button></div>
-                <p class="helper">Everything stays in this browser tab.</p>
-            </aside>
-            <section class="workspace">
-                <header class="workspace-head">
-                    <div>
-                        <div class="eyebrow">Live
-                            layout</div>
-                        <h2>Print-ready miniature
-                            sheet</h2>
-                    </div>
-                    <div class="sheet-status" id="sheetStatus">Add art to start
-                        packing the
-                        page</div>
-                </header>
-                <div class="paper-stage">
-                    <div class="paper-book" id="paper">
-                        <article class="paper">
-                            <header class="paper-header"><strong>Paper
-                                    Minis</strong><span>Cut solid outlines ·
-                                    fold
-                                    dashed lines · glue base tabs
-                                    together</span></header>
-                            <div class="sheet" id="sheet"></div>
-                            <p class="note" id="paperNote"></p>
-                        </article>
-                    </div>
+            </div>
+            <section class="section">
+                <h2>Character art</h2>
+                <label class="upload" id="dropZone"><strong>Upload character
+                        images</strong><span>Drop files here or paste an
+                        image from your clipboard</span><input id="imageUpload" type="file" accept="image/*"
+                        multiple></label>
+            </section>
+            <section class="section">
+                <h2>New miniature defaults</h2>
+                <div class="field"><label for="height"><span>Figure
+                            height</span><output id="heightOutput">40
+                            mm</output></label>
+                    <div class="slider-row"><input id="height" type="range" min="20" max="100" value="40"><input
+                            id="heightValue" class="slider-value" type="number" min="20" max="100" value="40"></div>
+                </div>
+                <div class="field"><label for="baseSize"><span>Base
+                            diameter</span><output id="baseOutput">25
+                            mm</output></label>
+                    <div class="slider-row"><input id="baseSize" type="range" min="15" max="75" value="25"><input
+                            id="baseValue" class="slider-value" type="number" min="15" max="75" value="25"></div>
+                </div>
+                <div class="field"><label for="copies"><span>Copies for new
+                            minis</span></label><input id="copies" type="number" min="1" max="12" value="1"></div>
+                <p class="helper">These settings apply to newly uploaded
+                    art. Each mini can be adjusted below.</p>
+            </section>
+            <section class="section">
+                <h2>Print options</h2>
+                <div class="field"><label for="pageSize"><span>Paper
+                            size</span></label><select id="pageSize">
+                        <option value="a4">A4</option>
+                        <option value="letter">US Letter</option>
+                    </select></div>
+                <div class="field"><label for="margin"><span>Page
+                            margin</span><output id="marginOutput">12
+                            mm</output></label>
+                    <div class="slider-row"><input id="margin" type="range" min="5" max="25" value="12"><input
+                            id="marginValue" class="slider-value" type="number" min="5" max="25" value="12"></div>
+                </div>
+                <label class="toggle"><span>Show cut / fold
+                        guides</span><input id="guides" type="checkbox" checked></label>
+                <label class="toggle"><span>Outline artwork
+                        silhouette</span><input id="silhouette" type="checkbox" checked></label>
+                <label class="toggle"><span>Grayscale back
+                        image</span><input id="grayscaleBack" type="checkbox"></label>
+            </section>
+            <section class="section">
+                <h2>Miniatures <span id="miniCount">(0)</span></h2>
+                <div class="mini-list" id="miniList">
+                    <p class="empty">Your
+                        uploaded adventurers will appear here.</p>
                 </div>
             </section>
-        </main>
-        <script>
-        (() => {
-            const state = { minis: [], height: 40, base: 25, copies: 1, margin: 12, page: 'a4', guides: true, silhouette: true };
-            const elements = Object.fromEntries(['imageUpload', 'dropZone', 'height', 'heightValue', 'heightOutput', 'baseSize', 'baseValue', 'baseOutput', 'copies', 'pageSize', 'margin', 'marginValue', 'marginOutput', 'guides', 'silhouette', 'miniList', 'miniCount', 'sheet', 'paper', 'sheetStatus', 'paperNote', 'printButton', 'clearButton'].map(id => [id, document.getElementById(id)]));
+            <div class="button-row"><button class="button" id="printButton">Print sheet</button><button
+                    class="button-secondary" id="clearButton">Clear
+                    all</button></div>
+            <p class="helper">Everything stays in this browser tab.</p>
+        </aside>
+        <section class="workspace">
+            <header class="workspace-head">
+                <div>
+                    <div class="eyebrow">Live
+                        layout</div>
+                    <h2>Print-ready miniature
+                        sheet</h2>
+                </div>
+                <div class="sheet-status" id="sheetStatus">Add art to start
+                    packing the
+                    page</div>
+            </header>
+            <div class="paper-stage">
+                <div class="paper-book" id="paper">
+                    <article class="paper">
+                        <header class="paper-header"><strong>Paper
+                                Minis</strong><span>Cut solid outlines ·
+                                fold
+                                dashed lines · glue base tabs
+                                together</span></header>
+                        <div class="sheet" id="sheet"></div>
+                        <p class="note" id="paperNote"></p>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script>
+        (async () => {
+            // 1. IndexedDB Helper
+            const db = {
+                name: 'PaperMinisDB',
+                version: 1,
+                store: 'state',
+                init() {
+                    return new Promise((resolve, reject) => {
+                        const request = indexedDB.open(this.name, this.version);
+                        request.onupgradeneeded = e => e.target.result.createObjectStore(this.store);
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error);
+                    });
+                },
+                async get(key) {
+                    const database = await this.init();
+                    return new Promise((resolve, reject) => {
+                        const request = database.transaction(this.store, 'readonly').objectStore(this.store).get(key);
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error);
+                    });
+                },
+                async set(key, value) {
+                    const database = await this.init();
+                    return new Promise((resolve, reject) => {
+                        const request = database.transaction(this.store, 'readwrite').objectStore(this.store).put(value, key);
+                        request.onsuccess = () => resolve();
+                        request.onerror = () => reject(request.error);
+                    });
+                }
+            };
+
+            // 2. Debounce function to prevent stuttering on range slider drags
+            const debounce = (func, wait) => {
+                let timeout;
+                return (...args) => {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func(...args), wait);
+                };
+            };
+
+            // 3. State Initialization
+            const defaultState = { minis: [], height: 40, base: 25, copies: 1, margin: 12, page: 'a4', guides: true, silhouette: true, grayscaleBack: false };
+            let state = defaultState;
+
+            try {
+                const savedState = await db.get('appState');
+                if (savedState) {
+                    state = savedState;
+                }
+            } catch (error) {
+                console.error("Failed to load state from IndexedDB.", error);
+            }
+
+            // The async save function, debounced by 500ms
+            const saveState = debounce(() => {
+                db.set('appState', state).catch(e => console.error("Failed to save state.", e));
+            }, 500);
+
+            const elements = Object.fromEntries(['imageUpload', 'dropZone', 'height', 'heightValue', 'heightOutput', 'baseSize', 'baseValue', 'baseOutput', 'copies', 'pageSize', 'margin', 'marginValue', 'marginOutput', 'guides', 'silhouette', 'grayscaleBack', 'miniList', 'miniCount', 'sheet', 'paper', 'sheetStatus', 'paperNote', 'printButton', 'clearButton'].map(id => [id, document.getElementById(id)]));
             const mm = value => `${value}mm`;
             const escapeHtml = value => value.replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
             const clampBase = value => Math.max(15, Math.min(75, Math.round(value)));
@@ -848,6 +895,16 @@
             };
 
             function render() {
+                // Sync UI toggles with current state
+                elements.pageSize.value = state.page;
+                elements.guides.checked = state.guides;
+                elements.silhouette.checked = state.silhouette;
+                elements.grayscaleBack.checked = state.grayscaleBack;
+                elements.copies.value = state.copies;
+
+                // Trigger the debounced background save
+                saveState();
+
                 const total = state.minis.reduce((sum, mini) => sum + mini.copies, 0);
                 const pageSize = state.page === 'letter' ? { width: 216, height: 279 } : { width: 210, height: 297 };
                 const contentWidth = pageSize.width - (state.margin * 2) - 1;
@@ -864,7 +921,7 @@
                 elements.miniList.innerHTML = state.minis.length ? state.minis.map((mini, index) => `<div class="mini-row"><img src="${mini.src}" alt=""><div class="mini-details"><strong title="${escapeHtml(mini.name)}">${escapeHtml(mini.name)}</strong><small>${mini.copies} ${mini.copies === 1 ? 'copy' : 'copies'}</small><div class="mini-controls"><label class="mini-control"><span>Height</span><input data-mini-control="height" data-index="${index}" data-mini-kind="range" type="range" min="20" max="100" value="${mini.height}"><input class="mini-value" data-mini-control="height" data-index="${index}" data-mini-kind="number" type="number" min="20" max="100" value="${mini.height}"><span class="mini-unit">mm</span></label><label class="mini-control"><span>Art zoom</span><input data-mini-control="artScale" data-index="${index}" data-mini-kind="range" type="range" min="50" max="160" value="${mini.artScale}"><input class="mini-value" data-mini-control="artScale" data-index="${index}" data-mini-kind="number" type="number" min="50" max="160" value="${mini.artScale}"><span class="mini-unit">%</span></label><label class="mini-control"><span>Base</span><input data-mini-control="base" data-index="${index}" data-mini-kind="range" type="range" min="15" max="75" value="${mini.base}"><input class="mini-value" data-mini-control="base" data-index="${index}" data-mini-kind="number" type="number" min="15" max="75" value="${mini.base}"><span class="mini-unit">mm</span></label><label class="mini-control"><span>Copies</span><input data-mini-control="copies" data-index="${index}" data-mini-kind="range" type="range" min="1" max="12" value="${mini.copies}"><input class="mini-value" data-mini-control="copies" data-index="${index}" data-mini-kind="number" type="number" min="1" max="12" value="${mini.copies}"><span class="mini-unit"></span></label></div></div><button class="icon-btn" data-remove="${index}" title="Remove ${escapeHtml(mini.name)}">×</button></div>`).join('') : '<p class="empty">Your uploaded miniatures will appear here.</p>';
                 syncFoldLabelControls();
                 const pageHeader = pageNumber => `<header class="paper-header"><strong>Paper Minis</strong><span>Page ${pageNumber} · Cut dotted borders · fold dashed lines</span></header>`;
-                const makeMini = placement => { const { mini, x, y, scale } = placement; const tabHeight = Math.max(8, Math.round(mini.base / 3)); const outline = state.silhouette ? '#202a35' : 'transparent'; return `<article class="mini" style="left:${mm(x)};top:${mm(y)};transform:scale(${scale});transform-origin:top left;--mini-w:${mm(mini.base + 8)};--mini-h:${mm(mini.height)};--tab-h:${mm(tabHeight)};--outline:${outline};--divider:${state.guides ? '#aeb8c4' : 'transparent'};--art-scale:${mini.artScale / 100}"><div class="base-tab" ${state.guides ? '' : 'style="border-color:transparent"'}></div><div class="figure back"><img src="${mini.src}" alt="${escapeHtml(mini.name)}"></div><div class="fold" style="${state.guides ? '' : 'border-color:transparent'}"></div><div class="figure"><img src="${mini.src}" alt="${escapeHtml(mini.name)}"></div><div class="base-tab bottom" ${state.guides ? '' : 'style="border-color:transparent"'}></div>${state.guides ? '<span class="cut-label">cut</span>' : ''}</article>`; };
+                const makeMini = placement => { const { mini, x, y, scale } = placement; const tabHeight = Math.max(8, Math.round(mini.base / 3)); const outline = state.silhouette ? '#202a35' : 'transparent'; const dropShadow = state.silhouette ? `drop-shadow(0 0 0 ${outline}) drop-shadow(1px 0 0 ${outline}) drop-shadow(-1px 0 0 ${outline}) drop-shadow(0 1px 0 ${outline}) drop-shadow(0 -1px 0 ${outline})` : ''; const backFilter = (state.grayscaleBack ? 'grayscale(100%)' : '') + (state.grayscaleBack && state.silhouette ? ' ' : '') + dropShadow; return `<article class="mini" style="left:${mm(x)};top:${mm(y)};transform:scale(${scale});transform-origin:top left;--mini-w:${mm(mini.base + 8)};--mini-h:${mm(mini.height)};--tab-h:${mm(tabHeight)};--outline:${outline};--divider:${state.guides ? '#aeb8c4' : 'transparent'};--art-scale:${mini.artScale / 100}"><div class="base-tab" ${state.guides ? '' : 'style="border-color:transparent"'}></div><div class="figure back"><img src="${mini.src}" alt="${escapeHtml(mini.name)}" style="filter:${backFilter || 'none'}"></div><div class="fold" style="${state.guides ? '' : 'border-color:transparent'}"></div><div class="figure"><img src="${mini.src}" alt="${escapeHtml(mini.name)}"></div><div class="base-tab bottom" ${state.guides ? '' : 'style="border-color:transparent"'}></div>${state.guides ? '<span class="cut-label">cut</span>' : ''}</article>`; };
                 if (!total) {
                     elements.paper.innerHTML = `<article class="paper${pageClass}" style="padding:${mm(state.margin)}">${pageHeader(1)}<div class="sheet page-sheet" style="--sheet-height:${mm(contentHeight)}"><div class="paper-empty"><div><b>Your paper sheet is waiting.</b>Upload character art from the panel to create double-sided, foldable D&amp;D minis with built-in base tabs.</div></div></div></article>`;
                     elements.sheetStatus.textContent = 'Add art to start packing the page';
@@ -936,7 +993,8 @@
             elements.pageSize.addEventListener('change', event => { state.page = event.target.value; render(); });
             elements.guides.addEventListener('change', event => { state.guides = event.target.checked; render(); });
             elements.silhouette.addEventListener('change', event => { state.silhouette = event.target.checked; render(); });
-            elements.miniList.addEventListener('input', event => { const control = event.target.dataset.miniControl; const index = event.target.dataset.index; const kind = event.target.dataset.miniKind; if (control && index !== undefined) { const mini = state.minis[Number(index)]; if (control === 'foldLabel') { mini.foldLabel = event.target.value; syncPaperFoldLabels([mini.foldLabel]); return; } const value = parseNumberValue(event.target.value); if (value !== null) { mini[control] = clampValue(value, Number(event.target.min), Number(event.target.max)); const row = event.target.closest('.mini-control'); if (row) { row.querySelectorAll(`[data-mini-control="${control}"]`).forEach(input => { input.value = mini[control]; }); } if (control === 'base') { mini.baseAuto = false; } else if (mini.baseAuto) { mini.base = getAutoBase(mini); } if (kind === 'range') { render(); } } } });
+            elements.grayscaleBack.addEventListener('change', event => { state.grayscaleBack = event.target.checked; render(); });
+            elements.miniList.addEventListener('input', event => { const control = event.target.dataset.miniControl; const index = event.target.dataset.index; const kind = event.target.dataset.miniKind; if (control && index !== undefined) { const mini = state.minis[Number(index)]; if (control === 'foldLabel') { mini.foldLabel = event.target.value; syncPaperFoldLabels([mini.foldLabel]); return; } const value = parseNumberValue(event.target.value); if (value !== null) { mini[control] = clampValue(value, Number(event.target.min), Number(event.target.max)); const row = event.target.closest('.mini-control'); if (row) { row.querySelectorAll(`[data-mini-control="${control}"]`).forEach(input => { input.value = mini[control]; }); } if (control === 'base') { mini.baseAuto = false; } else if (mini.baseAuto) { mini.base = getAutoBase(mini); } } } });
             elements.miniList.addEventListener('change', event => { const index = event.target.dataset.index; const control = event.target.dataset.miniControl; if (index !== undefined && control) { const mini = state.minis[Number(index)]; if (control === 'foldLabel') { mini.foldLabel = event.target.value; render(); return; } const value = parseNumberValue(event.target.value); if (value !== null) { mini[control] = clampValue(value, Number(event.target.min), Number(event.target.max)); if (control === 'base') { mini.baseAuto = false; } else if (mini.baseAuto) { mini.base = getAutoBase(mini); } } render(); } });
             elements.miniList.addEventListener('click', event => { const index = event.target.dataset.remove; if (index !== undefined) { state.minis.splice(Number(index), 1); render(); } });
             elements.clearButton.addEventListener('click', () => { state.minis = []; render(); });
@@ -944,6 +1002,6 @@
             render();
         })();
     </script>
-    </body>
+</body>
 
 </html>
