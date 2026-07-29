@@ -482,7 +482,7 @@
             position: relative;
             height: var(--sheet-height);
             padding-top: 0;
-            gap: 1.5mm;
+            gap: 0;
             overflow: hidden;
         }
 
@@ -1019,7 +1019,7 @@
                 const pageSize = state.page === 'letter' ? { width: 216, height: 279 } : { width: 210, height: 297 };
                 const contentWidth = pageSize.width - (state.margin * 2) - 1;
                 const contentHeight = pageSize.height - (state.margin * 2) - 10;
-                const packGap = 1.5;
+                const packGap = 0;
                 const pageClass = state.page === 'letter' ? ' letter' : '';
                 elements.heightOutput.textContent = `${state.height} mm`;
                 elements.baseOutput.textContent = `${state.base} mm`;
