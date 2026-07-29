@@ -5,8 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Paper Minis — Offline D&amp;D Miniature Maker</title>
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♟</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♟</text></svg>">
     <style>
         :root {
             --ink: #e9edf5;
@@ -672,94 +671,90 @@
 </head>
 
 <body>
+    <div id="wandModal" style="display: none; position: fixed; inset: 0; background: rgba(13, 20, 32, 0.9); z-index: 100; align-items: center; justify-content: center; flex-direction: column;">
+        <div style="background: var(--panel); padding: 20px; border-radius: 12px; border: 1px solid var(--line); display: flex; flex-direction: column; gap: 16px; max-width: 90vw; max-height: 90vh;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="margin: 0; font-size: 16px;">Magic Wand Editor</h2>
+                <button id="closeWand" class="button-secondary" style="min-height: 30px; padding: 4px 8px;">Cancel</button>
+            </div>
+            
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <label for="wandTolerance" style="color: var(--muted); font-size: 13px;">Tolerance</label>
+                <input id="wandTolerance" type="range" min="0" max="100" value="30" style="flex: 1;">
+                <output id="wandToleranceOut" style="color: var(--ink);">30</output>
+            </div>
+
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                <button id="undoWand" class="button-secondary" style="min-height: 30px; padding: 4px 12px; font-size: 13px;" disabled>Undo</button>
+            </div>
+
+            <div style="overflow: auto; border: 1px dashed var(--muted); background: #f8fafc; cursor: crosshair; position: relative;">
+                <div style="position: absolute; inset: 0; background-image: linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%); background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px; z-index: 0;"></div>
+                <canvas id="wandCanvas" style="position: relative; z-index: 1; display: block; max-height: 60vh;"></canvas>
+            </div>
+
+            <button id="saveWand" class="button" style="width: 100%;">Save Changes</button>
+        </div>
+    </div>
+
     <main class="app">
         <aside class="sidebar">
             <div class="brand">
                 <div class="brand-mark">♟</div>
                 <div>
                     <div class="eyebrow"> Created by PouyerDev</div>
-                    <h1>Paper
-                        Minis</h1>
+                    <h1>Paper Minis</h1>
                 </div>
             </div>
             <section class="section">
                 <h2>Character art</h2>
-                <label class="upload" id="dropZone"><strong>Upload character
-                        images</strong><span>Drop files here or paste an
-                        image from your clipboard</span><input id="imageUpload" type="file" accept="image/*"
-                        multiple></label>
+                <label class="upload" id="dropZone"><strong>Upload character images</strong><span>Drop files here or paste an image from your clipboard</span><input id="imageUpload" type="file" accept="image/*" multiple></label>
             </section>
             <section class="section">
                 <h2>New miniature defaults</h2>
-                <div class="field"><label for="height"><span>Figure
-                            height</span><output id="heightOutput">40
-                            mm</output></label>
-                    <div class="slider-row"><input id="height" type="range" min="20" max="100" value="40"><input
-                            id="heightValue" class="slider-value" type="number" min="20" max="100" value="40"></div>
+                <div class="field"><label for="height"><span>Figure height</span><output id="heightOutput">40 mm</output></label>
+                    <div class="slider-row"><input id="height" type="range" min="20" max="100" value="40"><input id="heightValue" class="slider-value" type="number" min="20" max="100" value="40"></div>
                 </div>
-                <div class="field"><label for="baseSize"><span>Base
-                            diameter</span><output id="baseOutput">25
-                            mm</output></label>
-                    <div class="slider-row"><input id="baseSize" type="range" min="15" max="75" value="25"><input
-                            id="baseValue" class="slider-value" type="number" min="15" max="75" value="25"></div>
+                <div class="field"><label for="baseSize"><span>Base diameter</span><output id="baseOutput">25 mm</output></label>
+                    <div class="slider-row"><input id="baseSize" type="range" min="15" max="75" value="25"><input id="baseValue" class="slider-value" type="number" min="15" max="75" value="25"></div>
                 </div>
-                <div class="field"><label for="copies"><span>Copies for new
-                            minis</span></label><input id="copies" type="number" min="1" max="12" value="1"></div>
-                <p class="helper">These settings apply to newly uploaded
-                    art. Each mini can be adjusted below.</p>
+                <div class="field"><label for="copies"><span>Copies for new minis</span></label><input id="copies" type="number" min="1" max="12" value="1"></div>
+                <p class="helper">These settings apply to newly uploaded art. Each mini can be adjusted below.</p>
             </section>
             <section class="section">
                 <h2>Print options</h2>
-                <div class="field"><label for="pageSize"><span>Paper
-                            size</span></label><select id="pageSize">
+                <div class="field"><label for="pageSize"><span>Paper size</span></label><select id="pageSize">
                         <option value="a4">A4</option>
                         <option value="letter">US Letter</option>
                     </select></div>
-                <div class="field"><label for="margin"><span>Page
-                            margin</span><output id="marginOutput">12
-                            mm</output></label>
-                    <div class="slider-row"><input id="margin" type="range" min="5" max="25" value="12"><input
-                            id="marginValue" class="slider-value" type="number" min="5" max="25" value="12"></div>
+                <div class="field"><label for="margin"><span>Page margin</span><output id="marginOutput">12 mm</output></label>
+                    <div class="slider-row"><input id="margin" type="range" min="5" max="25" value="12"><input id="marginValue" class="slider-value" type="number" min="5" max="25" value="12"></div>
                 </div>
-                <label class="toggle"><span>Show cut / fold
-                        guides</span><input id="guides" type="checkbox" checked></label>
-                <label class="toggle"><span>Outline artwork
-                        silhouette</span><input id="silhouette" type="checkbox" checked></label>
-                <label class="toggle"><span>Grayscale back
-                        image</span><input id="grayscaleBack" type="checkbox"></label>
+                <label class="toggle"><span>Show cut / fold guides</span><input id="guides" type="checkbox" checked></label>
+                <label class="toggle"><span>Outline artwork silhouette</span><input id="silhouette" type="checkbox" checked></label>
+                <label class="toggle"><span>Grayscale back image</span><input id="grayscaleBack" type="checkbox"></label>
             </section>
             <section class="section">
                 <h2>Miniatures <span id="miniCount">(0)</span></h2>
                 <div class="mini-list" id="miniList">
-                    <p class="empty">Your
-                        uploaded adventurers will appear here.</p>
+                    <p class="empty">Your uploaded adventurers will appear here.</p>
                 </div>
             </section>
-            <div class="button-row"><button class="button" id="printButton">Print sheet</button><button
-                    class="button-secondary" id="clearButton">Clear
-                    all</button></div>
+            <div class="button-row"><button class="button" id="printButton">Print sheet</button><button class="button-secondary" id="clearButton">Clear all</button></div>
             <p class="helper">Everything stays in this browser tab.</p>
         </aside>
         <section class="workspace">
             <header class="workspace-head">
                 <div>
-                    <div class="eyebrow">Live
-                        layout</div>
-                    <h2>Print-ready miniature
-                        sheet</h2>
+                    <div class="eyebrow">Live layout</div>
+                    <h2>Print-ready miniature sheet</h2>
                 </div>
-                <div class="sheet-status" id="sheetStatus">Add art to start
-                    packing the
-                    page</div>
+                <div class="sheet-status" id="sheetStatus">Add art to start packing the page</div>
             </header>
             <div class="paper-stage">
                 <div class="paper-book" id="paper">
                     <article class="paper">
-                        <header class="paper-header"><strong>Paper
-                                Minis</strong><span>Cut solid outlines ·
-                                fold
-                                dashed lines · glue base tabs
-                                together</span></header>
+                        <header class="paper-header"><strong>Paper Minis</strong><span>Cut solid outlines · fold dashed lines · glue base tabs together</span></header>
                         <div class="sheet" id="sheet"></div>
                         <p class="note" id="paperNote"></p>
                     </article>
@@ -828,6 +823,15 @@
             }, 500);
 
             const elements = Object.fromEntries(['imageUpload', 'dropZone', 'height', 'heightValue', 'heightOutput', 'baseSize', 'baseValue', 'baseOutput', 'copies', 'pageSize', 'margin', 'marginValue', 'marginOutput', 'guides', 'silhouette', 'grayscaleBack', 'miniList', 'miniCount', 'sheet', 'paper', 'sheetStatus', 'paperNote', 'printButton', 'clearButton'].map(id => [id, document.getElementById(id)]));
+            
+            // Magic Wand Setup
+            let currentWandIndex = null;
+            let currentWandImageData = null;
+            let wandUndoStack = []; // Stack to store image data history for undo
+            const wandCanvas = document.getElementById('wandCanvas');
+            const wandCtx = wandCanvas.getContext('2d', { willReadFrequently: true });
+            const wandModal = document.getElementById('wandModal');
+
             const mm = value => `${value}mm`;
             const escapeHtml = value => value.replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
             const clampBase = value => Math.max(15, Math.min(75, Math.round(value)));
@@ -883,6 +887,91 @@
                 return { src: output.toDataURL('image/png'), width: trimmedWidth, height: trimmedHeight };
             }
 
+            function applyMagicWandFloodFill(startX, startY, tolerance) {
+                const width = currentWandImageData.width;
+                const height = currentWandImageData.height;
+                const data = currentWandImageData.data;
+                const startIndex = (startY * width + startX) * 4;
+
+                const startR = data[startIndex];
+                const startG = data[startIndex + 1];
+                const startB = data[startIndex + 2];
+                const startA = data[startIndex + 3];
+
+                if (startA === 0) return;
+
+                // Save current state to undo stack before making changes
+                const imageDataCopy = new ImageData(
+                    new Uint8ClampedArray(currentWandImageData.data),
+                    currentWandImageData.width,
+                    currentWandImageData.height
+                );
+                wandUndoStack.push(imageDataCopy);
+                document.getElementById('undoWand').disabled = false;
+
+                const visited = new Uint8Array(width * height);
+                const queue = [{ x: startX, y: startY }];
+                const tolSq = tolerance * tolerance;
+
+                while (queue.length > 0) {
+                    const { x, y } = queue.shift();
+                    
+                    if (x < 0 || x >= width || y < 0 || y >= height) continue;
+
+                    const idx = y * width + x;
+                    if (visited[idx]) continue;
+                    visited[idx] = 1;
+
+                    const pixelIdx = idx * 4;
+                    const r = data[pixelIdx];
+                    const g = data[pixelIdx + 1];
+                    const b = data[pixelIdx + 2];
+                    const a = data[pixelIdx + 3];
+
+                    if (a === 0) continue;
+
+                    const dr = r - startR;
+                    const dg = g - startG;
+                    const db = b - startB;
+                    
+                    if ((dr * dr + dg * dg + db * db) <= tolSq) {
+                        data[pixelIdx + 3] = 0;
+                        
+                        queue.push({ x: x + 1, y });
+                        queue.push({ x: x - 1, y });
+                        queue.push({ x, y: y + 1 });
+                        queue.push({ x, y: y - 1 });
+                    }
+                }
+                
+                wandCtx.putImageData(currentWandImageData, 0, 0);
+            }
+
+            async function openWandModal(index) {
+                currentWandIndex = index;
+                const mini = state.minis[index];
+                const img = await loadImage(mini.src);
+                
+                wandCanvas.width = img.naturalWidth;
+                wandCanvas.height = img.naturalHeight;
+                wandCtx.clearRect(0, 0, wandCanvas.width, wandCanvas.height);
+                wandCtx.drawImage(img, 0, 0);
+                
+                currentWandImageData = wandCtx.getImageData(0, 0, wandCanvas.width, wandCanvas.height);
+                
+                // Initialize undo stack with the initial image state
+                wandUndoStack = [];
+                const initialImageData = new ImageData(
+                    new Uint8ClampedArray(currentWandImageData.data),
+                    currentWandImageData.width,
+                    currentWandImageData.height
+                );
+                wandUndoStack.push(initialImageData);
+                document.getElementById('undoWand').disabled = false;
+                
+                wandModal.style.display = 'flex';
+            }
+
             const getFoldLabel = mini => (mini.foldLabel || 'Fold').trim() || 'Fold';
 
             const syncFoldLabelControls = () => {
@@ -897,9 +986,13 @@
                     } else {
                         controls.insertAdjacentHTML('beforeend', `<label class="mini-control mini-control-text"><span>Name</span><input class="mini-value" data-mini-control="foldLabel" data-index="${index}" data-mini-kind="text" type="text" maxlength="24" value="${escapeHtml(foldLabel)}"><span class="mini-unit"></span></label>`);
                     }
-                    // Add Back image control after foldLabel (last in the list)
+                    
                     if (!controls.querySelector('[data-back-upload]')) {
                         controls.insertAdjacentHTML('beforeend', `<label class="mini-control mini-control-text"><span>Back image</span><input class="mini-value" type="file" accept="image/*" data-back-upload="${index}" style="display:none"><button class="icon-btn-green" data-back-upload="${index}" title="Upload back image for ${escapeHtml(state.minis[index].name)}" style="width:auto;padding:0 8px;font-size:11px">Upload Back</button></label>`);
+                    }
+                    
+                    if (!controls.querySelector('[data-wand]')) {
+                        controls.insertAdjacentHTML('beforeend', `<label class="mini-control mini-control-text"><span>Edit Art</span><button type="button" class="icon-btn-green wand-btn" data-wand="${index}" title="Magic Wand ${escapeHtml(state.minis[index].name)}" style="width:auto;padding:0 8px;font-size:11px">Remove Background</button></label>`);
                     }
                 });
             };
@@ -914,14 +1007,12 @@
             };
 
             function render() {
-                // Sync UI toggles with current state
                 elements.pageSize.value = state.page;
                 elements.guides.checked = state.guides;
                 elements.silhouette.checked = state.silhouette;
                 elements.grayscaleBack.checked = state.grayscaleBack;
                 elements.copies.value = state.copies;
 
-                // Trigger the debounced background save
                 saveState();
 
                 const total = state.minis.reduce((sum, mini) => sum + mini.copies, 0);
@@ -971,6 +1062,7 @@
                 syncPaperFoldLabels(figures.map(mini => getFoldLabel(mini)));
                 elements.sheetStatus.textContent = `${total} ${total === 1 ? 'miniature' : 'miniatures'} · ${pages.length} ${pages.length === 1 ? 'page' : 'pages'} · ${scaledCount ? `${scaledCount} fit to page` : 'no split miniatures'}`;
             }
+
             async function addFiles(files) {
                 for (const file of [...files].filter(entry => entry.type.startsWith('image/'))) {
                     const reader = new FileReader();
@@ -985,6 +1077,7 @@
                     render();
                 }
             }
+
             elements.imageUpload.addEventListener('change', event => { addFiles(event.target.files); event.target.value = ''; });
             document.addEventListener('paste', event => {
                 const images = [...event.clipboardData.items]
@@ -999,6 +1092,7 @@
             ['dragenter', 'dragover'].forEach(eventName => elements.dropZone.addEventListener(eventName, event => { event.preventDefault(); elements.dropZone.classList.add('dragging'); }));
             ['dragleave', 'drop'].forEach(eventName => elements.dropZone.addEventListener(eventName, event => { event.preventDefault(); elements.dropZone.classList.remove('dragging'); }));
             elements.dropZone.addEventListener('drop', event => addFiles(event.dataTransfer.files));
+            
             elements.height.addEventListener('input', event => { state.height = Number(event.target.value); syncNumberAndRange(elements.height, elements.heightValue, state.height); render(); });
             elements.heightValue.addEventListener('input', event => { const value = parseNumberValue(event.target.value); if (value !== null) { state.height = clampValue(value, 20, 100); syncNumberAndRange(elements.height, elements.heightValue, state.height); render(); } });
             elements.heightValue.addEventListener('change', () => { syncNumberAndRange(elements.height, elements.heightValue, state.height); });
@@ -1009,16 +1103,106 @@
             elements.margin.addEventListener('input', event => { state.margin = Number(event.target.value); syncNumberAndRange(elements.margin, elements.marginValue, state.margin); render(); });
             elements.marginValue.addEventListener('input', event => { const value = parseNumberValue(event.target.value); if (value !== null) { state.margin = clampValue(value, 5, 25); syncNumberAndRange(elements.margin, elements.marginValue, state.margin); render(); } });
             elements.marginValue.addEventListener('change', () => { syncNumberAndRange(elements.margin, elements.marginValue, state.margin); });
+            
             elements.pageSize.addEventListener('change', event => { state.page = event.target.value; render(); });
             elements.guides.addEventListener('change', event => { state.guides = event.target.checked; render(); });
             elements.silhouette.addEventListener('change', event => { state.silhouette = event.target.checked; render(); });
             elements.grayscaleBack.addEventListener('change', event => { state.grayscaleBack = event.target.checked; render(); });
+            
             elements.miniList.addEventListener('input', event => { const control = event.target.dataset.miniControl; const index = event.target.dataset.index; const kind = event.target.dataset.miniKind; if (control && index !== undefined) { const mini = state.minis[Number(index)]; if (control === 'foldLabel') { mini.foldLabel = event.target.value; syncPaperFoldLabels([mini.foldLabel]); return; } const value = parseNumberValue(event.target.value); if (value !== null) { mini[control] = clampValue(value, Number(event.target.min), Number(event.target.max)); const row = event.target.closest('.mini-control'); if (row) { row.querySelectorAll(`[data-mini-control="${control}"]`).forEach(input => { input.value = mini[control]; }); } if (control === 'base') { mini.baseAuto = false; } else if (mini.baseAuto) { mini.base = getAutoBase(mini); } } } });
             elements.miniList.addEventListener('change', event => { const index = event.target.dataset.index; const control = event.target.dataset.miniControl; if (index !== undefined && control) { const mini = state.minis[Number(index)]; if (control === 'foldLabel') { mini.foldLabel = event.target.value; render(); return; } const value = parseNumberValue(event.target.value); if (value !== null) { mini[control] = clampValue(value, Number(event.target.min), Number(event.target.max)); if (control === 'base') { mini.baseAuto = false; } else if (mini.baseAuto) { mini.base = getAutoBase(mini); } } render(); } });
-            elements.miniList.addEventListener('click', event => { const index = event.target.dataset.remove; if (index !== undefined) { state.minis.splice(Number(index), 1); render(); } const backUploadIndex = event.target.dataset.backUpload; if (backUploadIndex !== undefined) { const fileInput = event.target.closest('.mini-control').querySelector('input[type="file"]'); if (fileInput) fileInput.click(); } });
+            
+            elements.miniList.addEventListener('click', event => { 
+                const removeIndex = event.target.dataset.remove; 
+                if (removeIndex !== undefined) { 
+                    state.minis.splice(Number(removeIndex), 1); render(); 
+                } 
+                const backUploadIndex = event.target.dataset.backUpload; 
+                if (backUploadIndex !== undefined) { 
+                    const fileInput = event.target.closest('.mini-control').querySelector('input[type="file"]'); 
+                    if (fileInput) fileInput.click(); 
+                }
+                const wandIndex = event.target.dataset.wand;
+                if (wandIndex !== undefined) {
+                    openWandModal(Number(wandIndex));
+                }
+            });
+            
             elements.miniList.addEventListener('change', event => { const fileInput = event.target; if (fileInput.matches('input[type="file"][data-back-upload]')) { const index = Number(fileInput.dataset.backUpload); const file = fileInput.files[0]; if (file && file.type.startsWith('image/')) { const reader = new FileReader(); reader.onload = async e => { const trimmed = await trimTransparentPixels(e.target.result); state.minis[index].backSrc = trimmed.src; render(); }; reader.readAsDataURL(file); } fileInput.value = ''; } });
+            
+            // Magic Wand Canvas Interactions
+            wandCanvas.addEventListener('mousedown', (e) => {
+                if (!currentWandImageData) return;
+                const rect = wandCanvas.getBoundingClientRect();
+                const scaleX = wandCanvas.width / rect.width;
+                const scaleY = wandCanvas.height / rect.height;
+                const x = Math.floor((e.clientX - rect.left) * scaleX);
+                const y = Math.floor((e.clientY - rect.top) * scaleY);
+                const tolerance = Number(document.getElementById('wandTolerance').value);
+                applyMagicWandFloodFill(x, y, tolerance);
+            });
+
+            document.getElementById('wandTolerance').addEventListener('input', (e) => {
+                document.getElementById('wandToleranceOut').textContent = e.target.value;
+            });
+
+            document.getElementById('saveWand').addEventListener('click', async () => {
+                if (currentWandIndex !== null) {
+                    const mini = state.minis[currentWandIndex];
+                    
+                    let trimmed = await trimTransparentPixels(wandCanvas.toDataURL('image/png'));
+                    
+                    if (mini.src === mini.backSrc) {
+                         mini.backSrc = trimmed.src;
+                    }
+                    mini.src = trimmed.src;
+                    
+                    mini.aspect = trimmed.width / trimmed.height;
+                    if (mini.baseAuto) mini.base = getAutoBase(mini);
+                    
+                    render();
+                }
+                wandModal.style.display = 'none';
+            });
+
+            document.getElementById('closeWand').addEventListener('click', () => {
+                wandModal.style.display = 'none';
+            });
+
+            // Magic Wand Undo Functionality
+            function undoWand() {
+                if (wandUndoStack.length > 1) {
+                    // Remove the current state (top of stack)
+                    wandUndoStack.pop();
+                    // Restore the previous state
+                    const previousState = wandUndoStack[wandUndoStack.length - 1];
+                    currentWandImageData = new ImageData(
+                        new Uint8ClampedArray(previousState.data),
+                        previousState.width,
+                        previousState.height
+                    );
+                    wandCtx.putImageData(currentWandImageData, 0, 0);
+                    
+                    // Disable undo button if only initial state remains
+                    if (wandUndoStack.length <= 1) {
+                        document.getElementById('undoWand').disabled = true;
+                    }
+                }
+            }
+
+            document.getElementById('undoWand').addEventListener('click', undoWand);
+
+            // Ctrl+Z keyboard shortcut for undo when wand modal is open
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'z' && wandModal.style.display === 'flex') {
+                    e.preventDefault();
+                    undoWand();
+                }
+            });
+
             elements.clearButton.addEventListener('click', () => { state.minis = []; render(); });
             elements.printButton.addEventListener('click', () => window.print());
+            
             render();
         })();
     </script>
