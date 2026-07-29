@@ -1,24 +1,118 @@
-# Paper Minis
+# Paper Minis — Offline D&D Miniature Maker
 
-An offline, single-file D&D paper-miniature maker. Open `dnd-miniature-maker.html` in a modern browser — no install, account, or internet connection is needed.
+A **single-file, offline-first** web app for creating printable paper miniatures for tabletop RPGs like D&D, Pathfinder, etc. No installation, no account, no internet required — just open the HTML file in any modern browser.
 
-## What it does
+> **🌐 Try it online:** [https://papermini.netlify.app](https://papermini.netlify.app) — no download needed, works instantly in your browser.
 
-- Upload, drag in, or paste one or more character images from your clipboard, then automatically pack copies side-by-side on a print sheet.
-- Creates a front and inverted back for each foldable miniature.
-- Automatically fits each new base to the artwork proportions, with optional per-mini manual base controls.
-- Adds dotted separators between miniatures plus two fold-and-glue base tabs.
-- Shows a true multi-page preview, packs larger minis first to use page space efficiently, and starts a new sheet before a miniature would cross a page boundary.
-- Keeps the on-screen sheet at its actual paper proportions; smaller windows scroll the preview instead of shrinking and cropping the layout.
-- Automatically scales down only an oversized mini so it remains whole on the selected page instead of being cut off.
-- Provides individual figure-height, artwork zoom, base-size, and copy-count controls for every uploaded image, plus margin, A4/Papel carta, cut-guide, and silhouette-outline controls.
-- Uses the browser print dialog for true-size printing. Select **100%** or **Actual size** rather than fit-to-page.
+---
 
-## Assembly
+##  Features
 
-1. Print on cardstock at actual size.
-2. Cut around each piece using the solid shape outline.
-3. Fold on the dashed line between the two figures.
-4. Fold the two base tabs outward and glue them together.
+### Image Handling
+- **Multiple input methods**: Upload files, drag & drop, or paste from clipboard
+- **Batch processing**: Add multiple images at once
+- **Auto-packing**: Arranges copies side-by-side on print sheets efficiently
 
-Uploaded artwork is stored only in the active browser tab and disappears when the page is refreshed.
+### Miniature Generation
+- **Double-sided**: Creates front + mirrored back for foldable minis
+- **Auto-fit bases**: Base size adapts to artwork proportions automatically
+- **Per-mini controls**: Adjust figure height, art zoom, base size, and copy count individually
+- **Fold guides**: Dotted separator lines + two glue tabs on each base
+
+### Print Layout
+- **True multi-page preview** — see exactly what prints
+- **Smart packing**: Larger minis placed first for optimal space usage
+- **Page-aware**: Starts new sheet before a mini would be cut off
+- **Actual-size rendering**: On-screen preview matches paper proportions (scrolls instead of shrinking)
+- **Oversize protection**: Automatically scales down only minis that would exceed page bounds
+
+### Print Settings
+- Paper size: **A4** or **US Letter**
+- Adjustable margins
+- Optional cut guides & silhouette outlines
+- **Print at 100% / "Actual Size"** — never "Fit to Page"
+
+### Background Removal
+- Click any background area to make it transparent (flood-fill)
+- Adjustable tolerance slider
+- **Undo (Ctrl+Z)** support for mistakes
+
+### Privacy & Persistence
+- **100% client-side** — images never leave your browser
+- **Optional local storage** — saves your minis between sessions (IndexedDB)
+- Clears on browser data clear or manual reset
+
+---
+
+## 🚀 Quick Start
+
+1. **Download** `dnd-miniature-maker.html` (or clone this repo)
+2. **Open** it in Chrome, Firefox, Edge, or Safari
+3. **Add images** via:
+   - Click the upload zone
+   - Drag & drop files
+   - `Ctrl+V` / `Cmd+V` to paste from clipboard
+4. **Tune each mini** using the per-image controls
+5. **Adjust global settings** (paper, margins, guides) in the sidebar
+6. **Print** → Choose **100% / Actual Size** → Print on cardstock
+
+---
+
+## 🖨️ Assembly Instructions
+
+1. **Print** on heavy cardstock (200–300 gsm) at **actual size**
+2. **Cut** along the solid outer outline of each piece
+3. **Fold** on the dashed center line (front-to-back)
+4. **Fold** the two bottom tabs outward
+5. **Glue** tabs together to form a triangular base
+
+---
+
+## ⌨️ Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl/Cmd + V` | Paste image from clipboard |
+| `Ctrl/Cmd + Z` | Undo last Magic Wand click (in modal) |
+| `Delete` / `Backspace` | Remove selected mini (in list) |
+
+---
+
+## Technical Details
+
+- **Single HTML file** — HTML + CSS + vanilla JS (ES6 modules not needed)
+- **No build step** — runs directly in browser
+- **Canvas 2D API** for rendering & flood-fill
+- **IndexedDB** for optional local persistence
+- **CSS Grid/Flexbox** for responsive layout
+- **Print CSS** (`@media print`) for clean output
+
+### Browser Support
+| Browser | Minimum Version |
+|---------|-----------------|
+| Chrome  | 80+ |
+| Firefox | 75+ |
+| Edge    | 80+ |
+| Safari  | 14+ |
+
+---
+
+## Contributing
+
+1. Fork the repo
+2. Make changes to `dnd-miniature-maker.html`
+3. Test thoroughly in browser (print preview, multiple images, edge cases)
+4. Submit a PR with a clear description
+
+---
+
+## License
+
+MIT License — free for personal use.
+
+---
+
+## Credits
+- PouyerDev
+
+- Built for the tabletop RPG community. Inspired by the need for quick, custom minis without a 3D printer.
