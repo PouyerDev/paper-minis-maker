@@ -618,8 +618,20 @@
                 padding: 24px 10px;
             }
 
+            .paper-book {
+                width: 100%;
+                max-width: 816px;
+            }
+
             .paper {
                 transform-origin: top center;
+                transform: scale(min(1, calc((100vw - 20px) / 794px)));
+                width: 794px;
+            }
+
+            .paper.letter {
+                transform: scale(min(1, calc((100vw - 20px) / 816px)));
+                width: 816px;
             }
         }
 
